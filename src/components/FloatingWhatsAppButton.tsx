@@ -51,7 +51,7 @@ function extractCheckoutBlock(text: string): {
 }
 
 export const FloatingWhatsAppButton: React.FC = () => {
-  const [phone, setPhone] = useState('5511999999999')
+  const [phone, setPhone] = useState('5548992463428')
   const [storeName, setStoreName] = useState('HeadShop Entrega Rápida')
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<ChatMessage[]>([])

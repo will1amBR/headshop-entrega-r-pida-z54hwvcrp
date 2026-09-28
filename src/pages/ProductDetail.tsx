@@ -31,7 +31,7 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1)
   const [isLoading, setIsLoading] = useState(true)
   const [justAdded, setJustAdded] = useState(false)
-  const [whatsappPhone, setWhatsappPhone] = useState('5511999999999')
+  const [whatsappPhone, setWhatsappPhone] = useState('5548992463428')
 
   useEffect(() => {
     async function load() {

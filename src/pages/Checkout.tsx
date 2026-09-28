@@ -50,7 +50,7 @@ export default function CheckoutPage() {
   })
 
   const [errors, setErrors] = useState<FormErrors>({})
-  const [whatsappPhone, setWhatsappPhone] = useState('5511999999999')
+  const [whatsappPhone, setWhatsappPhone] = useState('5548992463428')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [orderSuccess, setOrderSuccess] = useState(false)
   const [savedOrderId, setSavedOrderId] = useState<string | null>(null)

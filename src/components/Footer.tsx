@@ -5,7 +5,7 @@ import { getSeoSettings } from '@/services/seo'
 import { buildWhatsAppUrl } from '@/lib/whatsapp'
 
 export const Footer: React.FC = () => {
-  const [phone, setPhone] = useState('5511999999999')
+  const [phone, setPhone] = useState('5548992463428')
 
   useEffect(() => {
     getSeoSettings().then((settings) => {

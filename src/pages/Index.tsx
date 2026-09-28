@@ -51,7 +51,7 @@ export default function IndexPage() {
     loadData()
   }, [])
 
-  const whatsappPhone = seo?.whatsapp_number || '5511999999999'
+  const whatsappPhone = seo?.whatsapp_number || '5548992463428'
 
   // 1. Mais Vendidos (featured = true, max 8)
   const bestSellers = useMemo(() => {
