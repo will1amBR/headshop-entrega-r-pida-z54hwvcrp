@@ -62,11 +62,43 @@ export function getCategoryFallbackImage(slug: string): string {
 
 export function getProductFallbackImage(name: string, categorySlug?: string): string {
   const lower = name.toLowerCase()
-  if (lower.includes('vaporizador') || lower.includes('slim') || lower.includes('pen')) {
+  if (
+    lower.includes('vaporizador') ||
+    lower.includes('slim') ||
+    lower.includes('pen') ||
+    lower.includes('bocal')
+  ) {
+    if (lower.includes('convecção') || lower.includes('storm')) {
+      return 'https://img.usecurling.com/p/600/600?q=vaporizer%20oled%20black'
+    }
+    if (lower.includes('wax') || lower.includes('dab')) {
+      return 'https://img.usecurling.com/p/600/600?q=vape%20pen%20concentrate'
+    }
     return 'https://img.usecurling.com/p/600/600?q=vape%20device%20black'
   }
-  if (lower.includes('seda') || lower.includes('hemp') || lower.includes('brown')) {
+  if (
+    lower.includes('seda') ||
+    lower.includes('hemp') ||
+    lower.includes('brown') ||
+    lower.includes('piteira') ||
+    lower.includes('livreto')
+  ) {
+    if (lower.includes('vidro')) {
+      return 'https://img.usecurling.com/p/600/600?q=glass%20filter%20tip'
+    }
     return 'https://img.usecurling.com/p/600/600?q=rolling%20paper%20leaves'
+  }
+  if (lower.includes('maçarico') || lower.includes('torch')) {
+    return 'https://img.usecurling.com/p/600/600?q=butane%20torch%20metal'
+  }
+  if (lower.includes('dabber') || lower.includes('case')) {
+    return 'https://img.usecurling.com/p/600/600?q=stainless%20tool%20kit'
+  }
+  if (lower.includes('hermético') || lower.includes('pote') || lower.includes('antiodor')) {
+    return 'https://img.usecurling.com/p/600/600?q=black%20glass%20jar'
+  }
+  if (lower.includes('tapete') || lower.includes('silicone') || lower.includes('mat')) {
+    return 'https://img.usecurling.com/p/600/600?q=silicone%20black%20mat'
   }
   if (lower.includes('dichavador') || lower.includes('grinder')) {
     return 'https://img.usecurling.com/p/600/600?q=metal%20herb%20grinder'
@@ -74,7 +106,13 @@ export function getProductFallbackImage(name: string, categorySlug?: string): st
   if (lower.includes('bandeja')) {
     return 'https://img.usecurling.com/p/600/600?q=metal%20tray%20black'
   }
-  if (lower.includes('pipe') || lower.includes('vidro') || lower.includes('bong')) {
+  if (lower.includes('bong') || lower.includes('bubbler')) {
+    if (lower.includes('beaker') || lower.includes('ice')) {
+      return 'https://img.usecurling.com/p/600/600?q=glass%20water%20pipe'
+    }
+    return 'https://img.usecurling.com/p/600/600?q=glass%20bong%20bubbler'
+  }
+  if (lower.includes('pipe') || lower.includes('one hitter')) {
     return 'https://img.usecurling.com/p/600/600?q=glass%20smoking%20pipe'
   }
   return getCategoryFallbackImage(categorySlug || '')

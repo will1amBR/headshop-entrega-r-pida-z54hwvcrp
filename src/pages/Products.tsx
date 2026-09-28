@@ -90,8 +90,9 @@ export default function ProductsPage() {
             Nossos Produtos
           </h1>
           <p className="text-zinc-600 text-sm sm:text-base max-w-2xl">
-            Explore nossa seleção completa de acessórios para headshop. Todos os pedidos são
-            finalizados com segurança e frete fixo via WhatsApp.
+            Explore nossa seleção completa de acessórios para headshop com entrega rápida em São
+            Paulo e envio seguro para todo o Brasil. Todos os pedidos são finalizados com
+            praticidade pelo WhatsApp.
           </p>
         </div>
 

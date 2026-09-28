@@ -238,8 +238,8 @@ export default function CartPage() {
                 )}
               </div>
 
-              {/* Payment note */}
-              <div className="pt-4 border-t border-zinc-200 space-y-2 text-xs text-zinc-500">
+              {/* Payment note & Fast SP Delivery badge */}
+              <div className="pt-4 border-t border-zinc-200 space-y-2.5 text-xs text-zinc-500">
                 <div className="flex items-center gap-2 text-zinc-800 font-semibold">
                   <ShieldCheck className="w-4 h-4 text-emerald-600" />
                   <span>Pagamento combinado no WhatsApp</span>
@@ -248,6 +248,10 @@ export default function CartPage() {
                   Na próxima etapa você confere os dados de entrega e envia a lista formatada direto
                   para nossa equipe pelo chat do WhatsApp.
                 </p>
+                <div className="p-2.5 rounded bg-zinc-100 border border-zinc-200/80 text-[11px] text-zinc-700 flex items-center gap-2">
+                  <span className="font-bold text-black">⚡ Entrega Expressa:</span>
+                  <span>Agilidade prioritária para pedidos na Grande São Paulo.</span>
+                </div>
               </div>
             </div>
           </div>

@@ -42,9 +42,14 @@ export const ShippingCalculator: React.FC = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Truck className="w-5 h-5 text-black" />
-          <h3 className="font-display font-semibold text-sm sm:text-base text-zinc-900">
-            Calculadora de Frete por Região
-          </h3>
+          <div>
+            <h3 className="font-display font-semibold text-sm sm:text-base text-zinc-900 leading-tight">
+              Calculadora de Frete por Região
+            </h3>
+            <span className="text-[11px] text-zinc-500 block">
+              ⚡ Entrega rápida em São Paulo e envio para todo o país
+            </span>
+          </div>
         </div>
         <span className="text-[11px] font-mono text-zinc-500 uppercase">Tabela Fixa Brasil</span>
       </div>
@@ -109,9 +114,16 @@ export const ShippingCalculator: React.FC = () => {
         <div className="mt-2 p-3 bg-white border border-zinc-200 rounded-md flex items-center justify-between text-xs sm:text-sm animate-fade-in">
           <div className="flex items-center gap-2 text-zinc-800 font-medium">
             <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-            <span>
-              ✓ Frete calculado para <strong>{selectedRegion}</strong>:
-            </span>
+            <div>
+              <span>
+                ✓ Frete calculado para <strong>{selectedRegion}</strong>:
+              </span>
+              {selectedRegion === 'Sudeste' && (
+                <span className="block text-[11px] text-emerald-700 font-normal">
+                  ⚡ Envio expresso para o estado de São Paulo
+                </span>
+              )}
+            </div>
           </div>
           <span className="font-mono font-bold text-sm text-black">
             {isFreeShippingEligible ? 'GRÁTIS' : formatBRL(shipping)}

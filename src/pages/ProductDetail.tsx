@@ -268,8 +268,11 @@ export default function ProductDetailPage() {
               <div className="flex items-start gap-2.5 p-3 rounded-lg bg-zinc-50 border border-zinc-200">
                 <Truck className="w-4 h-4 text-black shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-semibold text-zinc-900 block">Frete Fixo por Região</span>
-                  <span>Frete grátis para compras acima de R$ 299.</span>
+                  <span className="font-semibold text-zinc-900 block">Entrega Rápida em SP</span>
+                  <span>
+                    Envio expresso em São Paulo e tabela fixa para todo o Brasil (grátis acima de R$
+                    299).
+                  </span>
                 </div>
               </div>
 

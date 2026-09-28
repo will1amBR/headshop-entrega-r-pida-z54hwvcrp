@@ -84,16 +84,16 @@ export default function IndexPage() {
           <div className="lg:col-span-7 space-y-6 sm:space-y-8 animate-fade-in-up">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-mono tracking-widest text-zinc-300 uppercase">
               <span className="w-2 h-2 rounded-full bg-[#25D366] animate-ping" />
-              Atendimento Online • Entregas para Todo o Brasil
+              Entrega Rápida em São Paulo • Envio Brasil
             </div>
 
             <h1 className="font-display font-extrabold text-4xl sm:text-6xl tracking-tight leading-[1.08] text-white">
-              {seo?.hero_title || 'Sua loja headshop com entrega rápida'}
+              {seo?.hero_title || 'Sua loja headshop com entrega rápida em São Paulo'}
             </h1>
 
             <p className="text-zinc-400 text-base sm:text-xl max-w-xl font-normal leading-relaxed">
               {seo?.hero_subtitle ||
-                'Os melhores vaporizadores, sedas de cânhamo, dichavadores e pipes artesanais. Monte seu carrinho e finalize seu pedido com total agilidade pelo WhatsApp.'}
+                'Os melhores vaporizadores, sedas de cânhamo, dichavadores e pipes artesanais com entrega expressa em São Paulo e envio seguro para todo o Brasil. Monte seu carrinho e finalize pelo WhatsApp.'}
             </p>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2">
@@ -124,7 +124,11 @@ export default function IndexPage() {
             </div>
 
             {/* Quick bullet trust points */}
-            <div className="pt-6 grid grid-cols-3 gap-4 border-t border-zinc-800/80 text-xs font-mono text-zinc-400">
+            <div className="pt-6 grid grid-cols-4 gap-3 border-t border-zinc-800/80 text-xs font-mono text-zinc-400">
+              <div>
+                <span className="block font-bold text-white text-sm">Express</span>
+                Rápida em SP
+              </div>
               <div>
                 <span className="block font-bold text-white text-sm">R$ 299+</span>
                 Frete Grátis
@@ -400,11 +404,12 @@ export default function IndexPage() {
                 </div>
                 <div>
                   <h4 className="font-display font-semibold text-lg text-white">
-                    Entrega em Todo o Brasil
+                    Entrega Rápida em São Paulo & Envio Brasil
                   </h4>
                   <p className="text-sm text-zinc-400 mt-1">
-                    Envios via Correios e transportadoras com rastreamento ativo e embalagens 100%
-                    discretas.
+                    Agilidade máxima e entrega expressa para toda a região de São Paulo, além de
+                    envio seguro via Correios e transportadoras com rastreamento ativo para todo o
+                    Brasil.
                   </p>
                 </div>
               </div>

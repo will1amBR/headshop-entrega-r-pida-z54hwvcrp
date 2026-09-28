@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 
 const ANNOUNCEMENTS = [
-  '🚀 Entrega rápida para todo o Brasil',
-  '💬 Pedidos pelo WhatsApp',
+  '🚀 Entrega rápida em São Paulo • Envio para todo o Brasil',
+  '⚡ Entregas expressas na Grande São Paulo',
+  '💬 Pedidos pelo WhatsApp com atendimento ágil',
   '🔒 Pagamento combinado direto com a loja',
 ]
 

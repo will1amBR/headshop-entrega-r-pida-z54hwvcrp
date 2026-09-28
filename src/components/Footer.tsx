@@ -30,8 +30,9 @@ export const Footer: React.FC = () => {
               </span>
             </div>
             <p className="text-sm text-zinc-400 leading-relaxed">
-              Sua headshop completa com entrega ágil para todo o Brasil. Atendimento humanizado e
-              pedidos finalizados direto no WhatsApp com total comodidade.
+              Sua headshop completa com entrega rápida em São Paulo e envio seguro para todo o
+              Brasil. Atendimento humanizado e pedidos finalizados direto no WhatsApp com total
+              comodidade.
             </p>
             <div className="flex items-center gap-3 pt-2">
               <a
@@ -141,9 +142,9 @@ export const Footer: React.FC = () => {
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500 font-mono">
           <p>© {new Date().getFullYear()} HeadShop Entrega Rápida. Todos os direitos reservados.</p>
           <p className="flex items-center gap-1">
-            <span>Material Monochrome Design System</span>
+            <span>Entrega Rápida SP</span>
             <span>•</span>
-            <span>Brasil</span>
+            <span>Envio Brasil</span>
           </p>
         </div>
       </div>
