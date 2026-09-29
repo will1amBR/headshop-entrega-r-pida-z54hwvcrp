@@ -75,8 +75,10 @@ export function getProductFallbackImage(name: string, categorySlug?: string): st
   if (
     lower.includes('seda') &&
     !lower.includes('porta beck') &&
+    !lower.includes('guarda ocklinas') &&
     !lower.includes('pré-bolado') &&
-    !lower.includes('pre-bolado')
+    !lower.includes('pre-bolado') &&
+    !lower.includes('preroll')
   ) {
     if (lower.includes('marrom') || lower.includes('brown')) {
       return 'https://img.usecurling.com/p/600/600?q=brown%20rolling%20paper'
@@ -88,7 +90,16 @@ export function getProductFallbackImage(name: string, categorySlug?: string): st
   }
 
   // 2. Piteiras (vidro e papel)
-  if (lower.includes('piteira')) {
+  if (lower.includes('piteira') || lower.includes('filtro')) {
+    if (lower.includes('limpa') || lower.includes('escova')) {
+      return 'https://img.usecurling.com/p/600/600?q=pipe%20cleaning%20brush'
+    }
+    if (lower.includes('filtro')) {
+      if (lower.includes('carvão') || lower.includes('carvao')) {
+        return 'https://img.usecurling.com/p/600/600?q=carbon%20filter%20tips'
+      }
+      return 'https://img.usecurling.com/p/600/600?q=cigarette%20filter%20tips'
+    }
     if (
       lower.includes('vidro') ||
       lower.includes('print') ||
@@ -158,6 +169,12 @@ export function getProductFallbackImage(name: string, categorySlug?: string): st
 
   // 7. Cinzeiros
   if (lower.includes('cinzeiro')) {
+    if (lower.includes('turn off') || lower.includes('extintor')) {
+      return 'https://img.usecurling.com/p/600/600?q=snuffer%20car%20ashtray'
+    }
+    if (lower.includes('crystal') || lower.includes('cristal') || lower.includes('lapidado')) {
+      return 'https://img.usecurling.com/p/600/600?q=crystal%20glass%20ashtray'
+    }
     if (lower.includes('vidro')) {
       return 'https://img.usecurling.com/p/600/600?q=glass%20heavy%20ashtray'
     }
@@ -178,10 +195,11 @@ export function getProductFallbackImage(name: string, categorySlug?: string): st
     return 'https://img.usecurling.com/p/600/600?q=plastic%20airtight%20jar'
   }
 
-  // 9. Pré-bolados / Cones
+  // 9. Pré-bolados / Cones / Prerolls
   if (
     lower.includes('pré-bolado') ||
     lower.includes('pre-bolado') ||
+    lower.includes('preroll') ||
     lower.includes('blunt') ||
     lower.includes('cone')
   ) {
@@ -191,28 +209,52 @@ export function getProductFallbackImage(name: string, categorySlug?: string): st
     return 'https://img.usecurling.com/p/600/600?q=pre%20rolled%20cones%20paper'
   }
 
-  // 10. Porta Beck
-  if (lower.includes('porta beck')) {
+  // 10. Porta Beck / Guarda Ocklinas / Mocó
+  if (
+    lower.includes('porta beck') ||
+    lower.includes('guarda ocklinas') ||
+    lower.includes('mocó') ||
+    lower.includes('moco')
+  ) {
     if (lower.includes('triplo')) {
       return 'https://img.usecurling.com/p/600/600?q=multi%20joint%20holder%20tube'
+    }
+    if (lower.includes('metal')) {
+      return 'https://img.usecurling.com/p/600/600?q=metal%20joint%20container'
     }
     return 'https://img.usecurling.com/p/600/600?q=waterproof%20joint%20tube'
   }
 
-  // 11. Slicks
-  if (lower.includes('slick')) {
+  // 11. Slicks e Reservatórios de vidro
+  if (lower.includes('slick') || lower.includes('reservatório') || lower.includes('reservatorio')) {
     if (lower.includes('vidro') || lower.includes('divisória') || lower.includes('divisoria')) {
       return 'https://img.usecurling.com/p/600/600?q=glass%20concentrate%20jar'
     }
     return 'https://img.usecurling.com/p/600/600?q=silicone%20wax%20container'
   }
 
-  // 12. Bandejas
-  if (lower.includes('bandeja')) {
+  // 12. Bandejas e Rolling Trays
+  if (lower.includes('bandeja') || lower.includes('rolling tray')) {
     if (lower.includes('vidro')) {
       return 'https://img.usecurling.com/p/600/600?q=glass%20rolling%20tray'
     }
     return 'https://img.usecurling.com/p/600/600?q=metal%20rolling%20tray%20black'
+  }
+
+  // 12.1 Ziplocks
+  if (lower.includes('ziplock')) {
+    return 'https://img.usecurling.com/p/600/600?q=mylar%20smell%20proof%20bag'
+  }
+
+  // 12.2 Dabs e Extrações (tapete, espátula, bicucena)
+  if (lower.includes('tapete') || lower.includes('extração') || lower.includes('extracao')) {
+    return 'https://img.usecurling.com/p/600/600?q=silicone%20dab%20mat'
+  }
+  if (lower.includes('espátula') || lower.includes('espatula') || lower.includes('dabber')) {
+    return 'https://img.usecurling.com/p/600/600?q=stainless%20dab%20tool'
+  }
+  if (lower.includes('bicucena') || lower.includes('desentupidor')) {
+    return 'https://img.usecurling.com/p/600/600?q=metal%20pipe%20cleaning%20tool'
   }
 
   // 13. Bongs e Water Pipes

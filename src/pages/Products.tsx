@@ -23,8 +23,8 @@ import {
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 
-const INITIAL_PAGE_SIZE = 8
-const LOAD_MORE_STEP = 8
+const INITIAL_PAGE_SIZE = 16
+const LOAD_MORE_STEP = 16
 
 export default function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
