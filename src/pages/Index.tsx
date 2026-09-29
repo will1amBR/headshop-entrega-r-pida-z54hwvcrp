@@ -63,9 +63,13 @@ export default function IndexPage() {
     return allProducts.filter((p) => p.price <= 90).slice(0, 8)
   }, [allProducts])
 
-  // 3. Vaporizadores & Eletrônicos em Destaque (categoria vaporizadores, max 6)
-  const vapeHighlights = useMemo(() => {
-    return allProducts.filter((p) => p.expand?.category?.slug === 'vaporizadores').slice(0, 6)
+  // 3. Bongs & Vidrarias em Destaque (ou Sedas & Acessórios em Destaque)
+  const glassAndBongHighlights = useMemo(() => {
+    return allProducts
+      .filter(
+        (p) => p.expand?.category?.slug === 'bongs-pipes' || p.expand?.category?.slug === 'pipes',
+      )
+      .slice(0, 6)
   }, [allProducts])
 
   return (
@@ -152,7 +156,7 @@ export default function IndexPage() {
 
               <div className="relative my-auto flex items-center justify-center p-2">
                 <img
-                  src="https://img.usecurling.com/p/600/600?q=vaporizer%20device%20smoke"
+                  src="https://img.usecurling.com/p/600/600?q=borosilicate%20glass%20bong"
                   alt="Destaque HeadShop"
                   className="w-3/4 sm:w-4/5 h-auto object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.8)] transition-transform duration-500 group-hover:scale-105"
                 />
@@ -161,15 +165,15 @@ export default function IndexPage() {
               <div className="z-10 bg-black/75 backdrop-blur-md border border-zinc-800 p-3.5 sm:p-4 rounded-xl flex items-center justify-between">
                 <div>
                   <h4 className="font-display font-semibold text-sm sm:text-base text-white">
-                    HerbAir X Pro Digital
+                    Bong Vidro Percolador
                   </h4>
                   <p className="text-[11px] sm:text-xs text-zinc-400 font-mono">
-                    Aquecimento em 25s • Cerâmica
+                    Borossilicato • Super Filtragem
                   </p>
                 </div>
                 <Button
                   size="sm"
-                  onClick={() => navigate('/produtos?categoria=vaporizadores')}
+                  onClick={() => navigate('/produtos?categoria=bongs-pipes')}
                   className="bg-white text-black hover:bg-zinc-200 text-xs font-semibold h-8 px-3"
                 >
                   Conferir
@@ -201,33 +205,42 @@ export default function IndexPage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
-            {categories.map((cat) => {
-              const bgImg = getCategoryFallbackImage(cat.slug)
-              const count = allProducts.filter((p) => p.expand?.category?.slug === cat.slug).length
-              return (
-                <button
-                  key={cat.id}
-                  onClick={() => navigate(`/produtos?categoria=${cat.slug}`)}
-                  className="group relative h-36 sm:h-48 rounded-xl overflow-hidden border border-zinc-200 text-left transition-all duration-200 hover:-translate-y-1 hover:shadow-lg focus:outline-none bg-zinc-900"
-                >
-                  <img
-                    src={bgImg}
-                    alt={cat.name}
-                    loading="lazy"
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-75 group-hover:opacity-90"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent flex flex-col justify-end p-3.5 sm:p-5">
-                    <span className="text-[10px] font-mono text-zinc-300 uppercase tracking-widest">
-                      {count > 0 ? `${count} itens` : 'Catálogo'}
-                    </span>
-                    <h3 className="font-display font-bold text-base sm:text-lg text-white group-hover:underline">
-                      {cat.name}
-                    </h3>
-                  </div>
-                </button>
-              )
-            })}
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
+            {categories
+              .filter((cat) => {
+                const count = allProducts.filter(
+                  (p) => p.expand?.category?.slug === cat.slug || p.category === cat.id,
+                ).length
+                return count > 0
+              })
+              .map((cat) => {
+                const bgImg = getCategoryFallbackImage(cat.slug)
+                const count = allProducts.filter(
+                  (p) => p.expand?.category?.slug === cat.slug || p.category === cat.id,
+                ).length
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => navigate(`/produtos?categoria=${cat.slug}`)}
+                    className="group relative h-36 sm:h-44 rounded-xl overflow-hidden border border-zinc-200 text-left transition-all duration-200 hover:-translate-y-1 hover:shadow-lg focus:outline-none bg-zinc-900"
+                  >
+                    <img
+                      src={bgImg}
+                      alt={cat.name}
+                      loading="lazy"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 opacity-75 group-hover:opacity-90"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent flex flex-col justify-end p-3 sm:p-4">
+                      <span className="text-[10px] font-mono text-zinc-300 uppercase tracking-widest">
+                        {count > 0 ? `${count} itens` : 'Catálogo'}
+                      </span>
+                      <h3 className="font-display font-bold text-sm sm:text-base text-white group-hover:underline">
+                        {cat.name}
+                      </h3>
+                    </div>
+                  </button>
+                )
+              })}
           </div>
         </div>
       </section>
@@ -364,21 +377,21 @@ export default function IndexPage() {
         </div>
       </section>
 
-      {/* 6. Seção: Linha de Vaporizadores Portáteis (Carrossel Horizontal no Mobile) */}
+      {/* 6. Seção: Linha de Bongs & Pipes (Carrossel Horizontal no Mobile) */}
       <section className="py-12 sm:py-18 bg-white border-b border-zinc-200">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
           <div className="flex items-end justify-between gap-4 mb-6">
             <div>
               <div className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider text-zinc-500">
                 <Zap className="w-3.5 h-3.5 text-[#25D366]" />
-                Alta Tecnologia
+                Vidraria & Filtragem
               </div>
               <h2 className="font-display font-bold text-2xl sm:text-3xl text-zinc-950 tracking-tight">
-                Vaporizadores & Dispositivos
+                Bongs & Pipes
               </h2>
             </div>
             <Link
-              to="/produtos?categoria=vaporizadores"
+              to="/produtos?categoria=bongs-pipes"
               className="text-xs sm:text-sm font-semibold text-zinc-900 hover:text-black flex items-center gap-1 group whitespace-nowrap"
             >
               Ver categoria
@@ -388,7 +401,7 @@ export default function IndexPage() {
 
           <div className="relative">
             <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4 overflow-x-auto pb-3 sm:pb-0 scroll-smooth snap-x snap-mandatory scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
-              {vapeHighlights.map((product) => (
+              {glassAndBongHighlights.map((product) => (
                 <div
                   key={product.id}
                   className="w-[260px] sm:w-auto shrink-0 snap-start flex flex-col"
@@ -399,7 +412,7 @@ export default function IndexPage() {
             </div>
             <div className="sm:hidden flex items-center justify-between pt-2 text-[11px] font-mono text-zinc-400">
               <span>← Deslize para ver mais →</span>
-              <span>{vapeHighlights.length} produtos</span>
+              <span>{glassAndBongHighlights.length} produtos</span>
             </div>
           </div>
         </div>
@@ -412,8 +425,8 @@ export default function IndexPage() {
             Procurando algo específico?
           </h3>
           <p className="text-sm text-zinc-600 max-w-lg mx-auto">
-            Acesse nosso catálogo com todos os 24 produtos organizados por filtros de preço, busca
-            direta e categorias.
+            Acesse nosso catálogo completo com dezenas de itens organizados por filtros de preço,
+            busca direta e categorias.
           </p>
           <div className="pt-2">
             <Button

@@ -136,8 +136,9 @@ export default function ProductsPage() {
             Nossos Produtos
           </h1>
           <p className="text-zinc-600 text-xs sm:text-base max-w-2xl leading-relaxed">
-            Catálogo completo com 24 produtos selecionados em Vaporizadores, Seddas, Acessórios e
-            Pipes. Entrega rápida em São Paulo e envio Brasil com finalização via WhatsApp.
+            Catálogo completo da HeadShop Entrega Rápida com sedas, piteiras, dichavadores,
+            isqueiros, bongs e acessórios. Entrega rápida em São Paulo e envio Brasil com
+            finalização via WhatsApp.
           </p>
         </div>
 
