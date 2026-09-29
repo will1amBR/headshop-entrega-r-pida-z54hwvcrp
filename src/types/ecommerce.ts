@@ -82,6 +82,55 @@ export interface Supplier {
   updated: string
 }
 
+export type StockEntryStatus = 'rascunho' | 'em_conferencia' | 'concluida' | 'cancelada'
+export type VerificationStatus = 'pendente' | 'ok' | 'divergente'
+export type DivergenceType =
+  | 'quantidade_a_mais'
+  | 'quantidade_a_menos'
+  | 'avaria'
+  | 'item_incorreto'
+  | 'nenhuma'
+
+export interface StockEntryItem {
+  id: string
+  product_id?: string
+  description: string
+  ncm?: string
+  quantity: number
+  unit_price: number
+  subtotal: number
+  // Campos da conferência por foto
+  verified_quantity?: number
+  verification_status?: VerificationStatus
+  divergence_type?: DivergenceType
+  divergence_notes?: string
+  photo_url?: string // preview local ou anexo
+  photo_filename?: string
+}
+
+export interface StockEntry {
+  id: string
+  invoice_number?: string
+  series?: string
+  access_key?: string
+  supplier?: string
+  supplier_name?: string
+  supplier_cnpj?: string
+  status: StockEntryStatus
+  total_amount?: number
+  items_count?: number
+  notes?: string
+  divergences_summary?: string
+  items: StockEntryItem[]
+  invoice_photo?: string
+  verification_photos?: string[]
+  expand?: {
+    supplier?: Supplier
+  }
+  created: string
+  updated: string
+}
+
 export type StockMovementType = 'entrada' | 'saida' | 'ajuste'
 
 export interface StockMovement {

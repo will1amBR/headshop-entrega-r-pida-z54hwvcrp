@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-29T02:13:08.518Z",
+  "generatedAt": "2026-09-29T04:58:54.276Z",
   "collections": [
     {
       "name": "users",
@@ -1016,6 +1016,124 @@
         }
       ],
       "indexes": ["CREATE UNIQUE INDEX idx_integration_settings_key ON integration_settings (key)"]
+    },
+    {
+      "name": "stock_entries",
+      "type": "base",
+      "apiRules": {
+        "list": "",
+        "view": "",
+        "create": "",
+        "update": "",
+        "delete": ""
+      },
+      "fields": [
+        {
+          "name": "invoice_number",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "series",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "access_key",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "supplier",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "suppliers"
+        },
+        {
+          "name": "supplier_name",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "supplier_cnpj",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["rascunho", "em_conferencia", "concluida", "cancelada"]
+        },
+        {
+          "name": "total_amount",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "items_count",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "notes",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "divergences_summary",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "items",
+          "type": "json",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "invoice_photo",
+          "type": "file",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "verification_photos",
+          "type": "file",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_stock_entries_status ON stock_entries (status)",
+        "CREATE INDEX idx_stock_entries_created ON stock_entries (created)",
+        "CREATE INDEX idx_stock_entries_supplier ON stock_entries (supplier)"
+      ]
     }
   ]
 }

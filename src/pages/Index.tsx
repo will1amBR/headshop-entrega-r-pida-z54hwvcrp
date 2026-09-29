@@ -22,6 +22,7 @@ import { getSeoSettings } from '@/services/seo'
 import { getCategoryFallbackImage } from '@/lib/formatters'
 import { ProductCard } from '@/components/ProductCard'
 import { buildWhatsAppUrl } from '@/lib/whatsapp'
+import { useSeoMeta } from '@/hooks/use-seo-meta'
 
 export default function IndexPage() {
   const navigate = useNavigate()
@@ -52,6 +53,38 @@ export default function IndexPage() {
   }, [])
 
   const whatsappPhone = seo?.whatsapp_number || '5548992463428'
+
+  useSeoMeta({
+    title: seo?.hero_title
+      ? `${seo.hero_title} | HeadShop Entrega Rápida`
+      : 'HeadShop Entrega Rápida — Headshop com entrega rápida em São Paulo',
+    description:
+      seo?.hero_subtitle ||
+      'Compre sedas, dichavadores, bongs, vaporizadores e acessórios originais com entrega expressa em São Paulo e envio seguro para todo o Brasil.',
+    image: '/og-image.svg',
+    type: 'website',
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'Store',
+      name: 'HeadShop Entrega Rápida',
+      description:
+        'Acessórios para fumo, sedas, bongs, dichavadores e vaporizadores com entrega expressa.',
+      url:
+        typeof window !== 'undefined'
+          ? window.location.origin
+          : 'https://headshopentregarapida.com.br',
+      telephone: `+${whatsappPhone}`,
+      priceRange: '$$',
+      openingHoursSpecification: [
+        {
+          '@type': 'OpeningHoursSpecification',
+          dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+          opens: '09:00',
+          closes: '23:00',
+        },
+      ],
+    },
+  })
 
   // 1. Mais Vendidos (featured = true, max 8)
   const bestSellers = useMemo(() => {

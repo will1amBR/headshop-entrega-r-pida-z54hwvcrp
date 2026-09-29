@@ -1,0 +1,21 @@
+{
+  "short_name": "HeadShop",
+  "name": "HeadShop Entrega Rápida",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192 512x512"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "type": "image/png",
+      "sizes": "180x180"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0A0A0A",
+  "theme_color": "#0A0A0A",
+  "display": "standalone",
+  "orientation": "portrait"
+}

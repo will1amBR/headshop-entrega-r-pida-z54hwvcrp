@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
+import { useSeoMeta } from '@/hooks/use-seo-meta'
 
 const INITIAL_PAGE_SIZE = 16
 const LOAD_MORE_STEP = 16
@@ -43,6 +44,29 @@ export default function ProductsPage() {
   const [visibleCount, setVisibleCount] = useState<number>(INITIAL_PAGE_SIZE)
   // Modo de visualização: 'grid' (com paginação) ou 'grouped' (agrupado por seções de categoria)
   const [viewMode, setViewMode] = useState<'grid' | 'grouped'>('grid')
+
+  const currentCategoryName = useMemo(() => {
+    if (selectedCategory === 'todos') return 'Todos os Produtos'
+    const cat = categories.find((c) => c.slug === selectedCategory)
+    return cat ? cat.name : 'Catálogo'
+  }, [selectedCategory, categories])
+
+  useSeoMeta({
+    title: `${currentCategoryName} | HeadShop Entrega Rápida`,
+    description: `Confira ${currentCategoryName.toLowerCase()} com entrega ultra rápida em São Paulo e envio Brasil. Sedas, dichavadores, bongs e acessórios de alta qualidade.`,
+    type: 'website',
+    image: '/og-image.svg',
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: `${currentCategoryName} - HeadShop Entrega Rápida`,
+      description: `Catálogo de produtos da categoria ${currentCategoryName}.`,
+      url:
+        typeof window !== 'undefined'
+          ? window.location.href
+          : 'https://headshopentregarapida.com.br/produtos',
+    },
+  })
 
   useEffect(() => {
     async function load() {

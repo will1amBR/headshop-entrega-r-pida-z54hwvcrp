@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /checkout
+Disallow: /carrinho
+
+Sitemap: https://headshopentregarapida.com.br/sitemap.xml

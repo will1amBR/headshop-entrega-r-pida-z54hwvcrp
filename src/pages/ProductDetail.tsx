@@ -34,6 +34,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ProductCard } from '@/components/ProductCard'
 import { buildWhatsAppUrl } from '@/lib/whatsapp'
+import { useSeoMeta } from '@/hooks/use-seo-meta'
 
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -64,45 +65,6 @@ export default function ProductDetailPage() {
 
         if (prod) {
           setProduct(prod)
-
-          // Atualização dinâmica de metatags / SEO para compartilhamento
-          const cleanTitle = `${prod.name} | HeadShop Entrega Rápida`
-          const cleanDesc = prod.description
-            ? prod.description.slice(0, 155) + '...'
-            : 'Compre com entrega rápida em São Paulo e envio para todo o Brasil na HeadShop Entrega Rápida.'
-
-          document.title = cleanTitle
-
-          // Atualizar metatags padrão
-          let metaDesc = document.querySelector('meta[name="description"]')
-          if (!metaDesc) {
-            metaDesc = document.createElement('meta')
-            metaDesc.setAttribute('name', 'description')
-            document.head.appendChild(metaDesc)
-          }
-          metaDesc.setAttribute('content', cleanDesc)
-
-          // Open Graph / WhatsApp / Facebook
-          const setOgMeta = (prop: string, val: string) => {
-            let tag = document.querySelector(`meta[property="${prop}"]`)
-            if (!tag) {
-              tag = document.createElement('meta')
-              tag.setAttribute('property', prop)
-              document.head.appendChild(tag)
-            }
-            tag.setAttribute('content', val)
-          }
-
-          const prodImg = prod.image
-            ? getFileUrl('products', prod.id, prod.image)
-            : getProductFallbackImage(prod.name, prod.expand?.category?.slug)
-
-          setOgMeta('og:title', cleanTitle)
-          setOgMeta('og:description', cleanDesc)
-          setOgMeta('og:image', prodImg)
-          setOgMeta('og:url', window.location.href)
-          setOgMeta('og:type', 'product')
-
           // Carregar produtos relacionados da mesma categoria
           const allFromCat = await getProducts({ category: prod.category })
           setRelatedProducts(allFromCat.filter((p) => p.id !== prod.id).slice(0, 4))
@@ -117,6 +79,42 @@ export default function ProductDetailPage() {
     setQuantity(1)
     setSelectedImageIndex(0)
   }, [id])
+
+  const primaryImageUrl = product?.image
+    ? getFileUrl('products', product.id, product.image)
+    : getProductFallbackImage(product?.name || 'produto', product?.expand?.category?.slug)
+
+  useSeoMeta({
+    title: product ? `${product.name} | HeadShop Entrega Rápida` : 'Produto | HeadShop',
+    description: product?.description
+      ? product.description.slice(0, 160)
+      : 'Compre na HeadShop Entrega Rápida com entrega rápida e frete seguro.',
+    image: primaryImageUrl,
+    type: 'product',
+    jsonLd: product
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'Product',
+          name: product.name,
+          image: [primaryImageUrl],
+          description: product.description || product.name,
+          sku: product.id,
+          offers: {
+            '@type': 'Offer',
+            url: typeof window !== 'undefined' ? window.location.href : '',
+            priceCurrency: 'BRL',
+            price: product.price,
+            availability:
+              product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+            itemCondition: 'https://schema.org/NewCondition',
+            seller: {
+              '@type': 'Organization',
+              name: 'HeadShop Entrega Rápida',
+            },
+          },
+        }
+      : undefined,
+  })
 
   if (isLoading) {
     return (
@@ -150,10 +148,6 @@ export default function ProductDetailPage() {
       </div>
     )
   }
-
-  const primaryImageUrl = product.image
-    ? getFileUrl('products', product.id, product.image)
-    : getProductFallbackImage(product.name, product.expand?.category?.slug)
 
   // Galeria de ângulos/vistas do produto
   const galleryImages = [
