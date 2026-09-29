@@ -54,6 +54,34 @@ export interface Order {
   updated: string
 }
 
+export type ShippingStatus =
+  | 'separacao'
+  | 'pronto_envio'
+  | 'enviado'
+  | 'em_transito'
+  | 'entregue'
+  | 'devolvido'
+  | 'devolucao_recebida'
+
+export interface Shipment {
+  id: string
+  order: string
+  expand?: {
+    order?: Order
+  }
+  tracking_code?: string
+  carrier?: string
+  shipping_status: ShippingStatus
+  return_reason?: string
+  refund_amount?: number
+  shipped_at?: string
+  delivered_at?: string
+  returned_at?: string
+  notes?: string
+  created: string
+  updated: string
+}
+
 export interface SeoSettings {
   id: string
   store_name: string

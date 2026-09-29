@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-29T00:46:51.637Z",
+  "generatedAt": "2026-09-29T01:53:49.467Z",
   "collections": [
     {
       "name": "users",
@@ -437,6 +437,108 @@
       "indexes": [
         "CREATE INDEX idx_campaigns_status ON campaigns (status)",
         "CREATE INDEX idx_campaigns_created ON campaigns (created)"
+      ]
+    },
+    {
+      "name": "shipments",
+      "type": "base",
+      "apiRules": {
+        "list": "",
+        "view": "",
+        "create": "",
+        "update": "",
+        "delete": ""
+      },
+      "fields": [
+        {
+          "name": "order",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "orders"
+        },
+        {
+          "name": "tracking_code",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "carrier",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "shipping_status",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": [
+            "separacao",
+            "pronto_envio",
+            "enviado",
+            "em_transito",
+            "entregue",
+            "devolvido",
+            "devolucao_recebida"
+          ]
+        },
+        {
+          "name": "return_reason",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "refund_amount",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "shipped_at",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "delivered_at",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "returned_at",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "notes",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_shipments_order ON shipments (order)",
+        "CREATE INDEX idx_shipments_status ON shipments (shipping_status)",
+        "CREATE INDEX idx_shipments_created ON shipments (created)"
       ]
     }
   ]

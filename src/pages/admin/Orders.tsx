@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { Search, Filter, MessageCircle, Eye, RefreshCw, X } from 'lucide-react'
 import { Order, OrderStatus } from '@/types/ecommerce'
 import { getOrders, updateOrderStatus } from '@/services/orders'
+import { syncOrderShipment } from '@/services/shipments'
 import { formatBRL, formatDateTime } from '@/lib/formatters'
 import { buildWhatsAppUrl } from '@/lib/whatsapp'
 import { Button } from '@/components/ui/button'
@@ -73,6 +74,16 @@ export default function AdminOrders() {
       const updated = await updateOrderStatus(selectedOrder.id, newStatus)
       setSelectedOrder(updated)
       setOrders((prev) => prev.map((o) => (o.id === updated.id ? updated : o)))
+
+      // Sincronizar expedição se aplicável
+      const now = new Date().toISOString().replace('T', ' ').substring(0, 19)
+      if (newStatus === 'enviado') {
+        syncOrderShipment(selectedOrder.id, 'enviado', { shipped_at: now }).catch(() => {})
+      } else if (newStatus === 'entregue') {
+        syncOrderShipment(selectedOrder.id, 'entregue', { delivered_at: now }).catch(() => {})
+      } else if (newStatus === 'em preparo') {
+        syncOrderShipment(selectedOrder.id, 'separacao').catch(() => {})
+      }
     } catch (err) {
       console.error('Erro ao atualizar status do pedido', err)
       alert('Falha ao atualizar o status do pedido.')
@@ -117,6 +128,16 @@ export default function AdminOrders() {
           </h1>
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="border-zinc-300 hover:border-black text-xs gap-1.5"
+          >
+            <Link to="/admin/expedicao">
+              <span>Expedição</span>
+            </Link>
+          </Button>
           <Button
             asChild
             variant="outline"

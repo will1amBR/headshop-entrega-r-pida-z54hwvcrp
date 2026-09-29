@@ -13,8 +13,9 @@ import {
   XCircle,
   MoveRight,
 } from 'lucide-react'
-import { Order, OrderStatus } from '@/types/ecommerce'
+import { Order, OrderStatus, ShippingStatus } from '@/types/ecommerce'
 import { getOrders, updateOrderStatus } from '@/services/orders'
+import { syncOrderShipment } from '@/services/shipments'
 import { formatBRL, formatDateTime } from '@/lib/formatters'
 import { buildWhatsAppUrl } from '@/lib/whatsapp'
 import { Button } from '@/components/ui/button'
@@ -202,6 +203,22 @@ export default function AdminKanban() {
 
     try {
       await updateOrderStatus(orderId, targetStatus)
+
+      // Sincronizar com a área de expedição / shipments
+      const now = new Date().toISOString().replace('T', ' ').substring(0, 19)
+      if (targetStatus === 'enviado') {
+        await syncOrderShipment(orderId, 'enviado', {
+          shipped_at: now,
+        }).catch((e) => console.warn('Erro ao sincronizar shipment para enviado:', e))
+      } else if (targetStatus === 'entregue') {
+        await syncOrderShipment(orderId, 'entregue', {
+          delivered_at: now,
+        }).catch((e) => console.warn('Erro ao sincronizar shipment para entregue:', e))
+      } else if (targetStatus === 'em preparo') {
+        await syncOrderShipment(orderId, 'separacao').catch((e) =>
+          console.warn('Erro ao sincronizar shipment para separacao:', e),
+        )
+      }
     } catch (err) {
       console.error('Falha ao mover pedido no kanban:', err)
       // Reverter em caso de falha
@@ -216,6 +233,22 @@ export default function AdminKanban() {
       const updated = await updateOrderStatus(selectedOrder.id, newStatus)
       setSelectedOrder(updated)
       setOrders((prev) => prev.map((o) => (o.id === updated.id ? updated : o)))
+
+      // Sincronizar com a área de expedição
+      const now = new Date().toISOString().replace('T', ' ').substring(0, 19)
+      if (newStatus === 'enviado') {
+        await syncOrderShipment(selectedOrder.id, 'enviado', {
+          shipped_at: now,
+        }).catch((e) => console.warn('Erro sync shipment:', e))
+      } else if (newStatus === 'entregue') {
+        await syncOrderShipment(selectedOrder.id, 'entregue', {
+          delivered_at: now,
+        }).catch((e) => console.warn('Erro sync shipment:', e))
+      } else if (newStatus === 'em preparo') {
+        await syncOrderShipment(selectedOrder.id, 'separacao').catch((e) =>
+          console.warn('Erro sync shipment:', e),
+        )
+      }
     } catch (err) {
       console.error('Erro ao atualizar status do pedido', err)
     } finally {
@@ -241,7 +274,19 @@ export default function AdminKanban() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
-          {/* Alternância para modo Lista */}
+          {/* Alternância para modo Lista e Expedição */}
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="border-zinc-300 hover:border-black text-xs gap-1.5 h-9"
+          >
+            <Link to="/admin/expedicao">
+              <Truck className="w-4 h-4 text-purple-600" />
+              <span>Área de Expedição</span>
+            </Link>
+          </Button>
+
           <Button
             asChild
             variant="outline"

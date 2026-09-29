@@ -25,6 +25,7 @@ import { AdminLayout } from './components/admin/AdminLayout'
 import AdminDashboard from './pages/admin/Dashboard'
 import AdminKanban from './pages/admin/Kanban'
 import AdminOrders from './pages/admin/Orders'
+import AdminExpedicao from './pages/admin/Expedicao'
 import AdminCommercial from './pages/admin/Commercial'
 import AdminCRM from './pages/admin/CRM'
 import AdminMarketing from './pages/admin/Marketing'
@@ -60,6 +61,7 @@ const App = () => (
                 <Route index element={<AdminDashboard />} />
                 <Route path="kanban" element={<AdminKanban />} />
                 <Route path="pedidos" element={<AdminOrders />} />
+                <Route path="expedicao" element={<AdminExpedicao />} />
                 <Route path="comercial" element={<AdminCommercial />} />
                 <Route path="crm" element={<AdminCRM />} />
                 <Route path="marketing" element={<AdminMarketing />} />
