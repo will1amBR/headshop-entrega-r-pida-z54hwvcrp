@@ -188,14 +188,25 @@ export default function ProductDetailPage() {
               </div>
             </div>
 
-            {/* Description */}
-            <div className="border-t border-b border-zinc-200 py-5">
-              <h3 className="text-xs font-mono uppercase tracking-wider font-semibold text-zinc-400 mb-2">
-                Descrição do Produto
-              </h3>
-              <p className="text-sm sm:text-base text-zinc-700 leading-relaxed whitespace-pre-line">
-                {product.description}
-              </p>
+            {/* Description & Technical Info */}
+            <div className="border-t border-b border-zinc-200 py-5 space-y-3">
+              <div>
+                <h3 className="text-xs font-mono uppercase tracking-wider font-semibold text-zinc-400 mb-2">
+                  Descrição do Produto
+                </h3>
+                <p className="text-sm sm:text-base text-zinc-700 leading-relaxed whitespace-pre-line">
+                  {product.description}
+                </p>
+              </div>
+
+              {product.ncm && (
+                <div className="pt-2 flex items-center gap-2 text-xs font-mono text-zinc-500">
+                  <span className="font-semibold text-zinc-700">NCM:</span>
+                  <span className="bg-zinc-100 border border-zinc-200 px-2 py-0.5 rounded text-zinc-800">
+                    {product.ncm}
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Quantity Selector & Add to cart CTA */}

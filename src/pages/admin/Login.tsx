@@ -61,6 +61,48 @@ export default function AdminLogin() {
           </p>
         </div>
 
+        {/* Credenciais de Demonstração bem visíveis */}
+        <div className="bg-gradient-to-br from-zinc-950 to-zinc-900 border border-zinc-700/80 rounded-xl p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-xs font-mono uppercase tracking-wider font-semibold text-zinc-300">
+                Acesso Demonstração
+              </span>
+            </div>
+            <span className="text-[10px] font-mono bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded border border-zinc-700">
+              Admin
+            </span>
+          </div>
+
+          <div className="space-y-1.5 text-xs font-mono bg-black/60 p-3 rounded-lg border border-zinc-800">
+            <div className="flex items-center justify-between text-zinc-300">
+              <span className="text-zinc-500">E-mail:</span>
+              <span className="font-semibold text-white select-all">
+                william@korenambiental.com
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-zinc-300">
+              <span className="text-zinc-500">Senha:</span>
+              <span className="font-semibold text-white select-all">Skip@Pass</span>
+            </div>
+          </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setEmail('william@korenambiental.com')
+              setPassword('Skip@Pass')
+              setError(null)
+            }}
+            className="w-full text-xs font-semibold bg-zinc-800/80 hover:bg-white hover:text-black border-zinc-700 text-zinc-200 transition-colors h-8"
+          >
+            Preencher Automaticamente
+          </Button>
+        </div>
+
         {error && (
           <div className="p-3 bg-red-950/60 border border-red-800 text-red-300 text-xs rounded-lg flex items-center gap-2">
             <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />

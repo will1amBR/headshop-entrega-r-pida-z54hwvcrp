@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-29T00:10:04.549Z",
+  "generatedAt": "2026-09-29T00:18:17.548Z",
   "collections": [
     {
       "name": "users",
@@ -163,6 +163,12 @@
           "required": false,
           "system": false,
           "autodateTriggers": ["onCreate", "onUpdate"]
+        },
+        {
+          "name": "ncm",
+          "type": "text",
+          "required": false,
+          "system": false
         }
       ],
       "indexes": [

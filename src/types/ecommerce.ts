@@ -17,6 +17,7 @@ export interface Product {
   featured: boolean
   active: boolean
   category: string
+  ncm?: string
   expand?: {
     category?: Category
   }

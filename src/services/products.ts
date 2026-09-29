@@ -74,6 +74,7 @@ export async function createProduct(data: {
   featured: boolean
   active: boolean
   category: string
+  ncm?: string
   image?: File
 }): Promise<Product> {
   const formData = new FormData()
@@ -84,6 +85,7 @@ export async function createProduct(data: {
   formData.append('featured', String(data.featured))
   formData.append('active', String(data.active))
   formData.append('category', data.category)
+  if (data.ncm) formData.append('ncm', data.ncm)
   if (data.image) {
     formData.append('image', data.image)
   }
@@ -100,6 +102,7 @@ export async function updateProduct(
     featured: boolean
     active: boolean
     category: string
+    ncm?: string
     image?: File
   }>,
 ): Promise<Product> {
@@ -111,6 +114,7 @@ export async function updateProduct(
   if (data.featured !== undefined) formData.append('featured', String(data.featured))
   if (data.active !== undefined) formData.append('active', String(data.active))
   if (data.category !== undefined) formData.append('category', data.category)
+  if (data.ncm !== undefined) formData.append('ncm', data.ncm)
   if (data.image) formData.append('image', data.image)
 
   return await pb.collection('products').update<Product>(id, formData)

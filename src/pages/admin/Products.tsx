@@ -56,6 +56,7 @@ export default function AdminProducts() {
   const [price, setPrice] = useState<number | string>('')
   const [stock, setStock] = useState<number | string>(10)
   const [category, setCategory] = useState('')
+  const [ncm, setNcm] = useState('')
   const [featured, setFeatured] = useState(false)
   const [active, setActive] = useState(true)
   const [imageFile, setImageFile] = useState<File | null>(null)
@@ -89,6 +90,7 @@ export default function AdminProducts() {
     setPrice('')
     setStock(10)
     setCategory(categories[0]?.id || '')
+    setNcm('')
     setFeatured(false)
     setActive(true)
     setImageFile(null)
@@ -102,6 +104,7 @@ export default function AdminProducts() {
     setPrice(p.price)
     setStock(p.stock)
     setCategory(p.category)
+    setNcm(p.ncm || '')
     setFeatured(p.featured)
     setActive(p.active)
     setImageFile(null)
@@ -127,6 +130,7 @@ export default function AdminProducts() {
           price: numPrice,
           stock: numStock,
           category,
+          ncm: ncm.trim() || undefined,
           featured,
           active,
           image: imageFile || undefined,
@@ -138,6 +142,7 @@ export default function AdminProducts() {
           price: numPrice,
           stock: numStock,
           category,
+          ncm: ncm.trim() || undefined,
           featured,
           active,
           image: imageFile || undefined,
@@ -243,11 +248,11 @@ export default function AdminProducts() {
               <tr>
                 <th className="py-3.5 px-4">Imagem</th>
                 <th className="py-3.5 px-4">Nome</th>
+                <th className="py-3.5 px-4">NCM</th>
                 <th className="py-3.5 px-4">Categoria</th>
                 <th className="py-3.5 px-4">Preço</th>
                 <th className="py-3.5 px-4">Estoque</th>
-                <th className="py-3.5 px-4">Destaque</th>
-                <th className="py-3.5 px-4">Ativo</th>
+                <th className="py-3.5 px-4">Status</th>
                 <th className="py-3.5 px-4 text-right">Ações</th>
               </tr>
             </thead>
@@ -273,8 +278,22 @@ export default function AdminProducts() {
                           className="w-12 h-12 rounded object-cover border border-zinc-200"
                         />
                       </td>
-                      <td className="py-3 px-4 font-semibold text-zinc-900 max-w-xs truncate">
-                        {prod.name}
+                      <td className="py-3 px-4 font-semibold text-zinc-900 max-w-xs">
+                        <div className="font-semibold text-zinc-900 truncate">{prod.name}</div>
+                        {prod.featured && (
+                          <span className="inline-block text-[10px] bg-zinc-950 text-white px-1.5 py-0.2 rounded font-mono uppercase mt-0.5">
+                            Destaque
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-3 px-4 font-mono text-zinc-700">
+                        {prod.ncm ? (
+                          <span className="bg-zinc-100 border border-zinc-200 px-2 py-0.5 rounded text-[11px] font-semibold text-zinc-800">
+                            {prod.ncm}
+                          </span>
+                        ) : (
+                          <span className="text-zinc-400">—</span>
+                        )}
                       </td>
                       <td className="py-3 px-4 text-zinc-600">
                         {prod.expand?.category?.name ||
@@ -292,13 +311,6 @@ export default function AdminProducts() {
                         )}
                       </td>
                       <td className="py-3 px-4">
-                        {prod.featured ? (
-                          <Badge className="bg-black text-white text-[10px]">Sim</Badge>
-                        ) : (
-                          <span className="text-zinc-400 font-mono">Não</span>
-                        )}
-                      </td>
-                      <td className="py-3 px-4">
                         <button
                           type="button"
                           onClick={() => handleToggleActive(prod.id, prod.active)}
@@ -306,11 +318,11 @@ export default function AdminProducts() {
                           title="Clique para alternar status"
                         >
                           {prod.active ? (
-                            <span className="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded text-[11px] font-medium border border-emerald-200">
+                            <span className="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded text-[11px] font-medium border border-emerald-200 hover:bg-emerald-100 transition-colors">
                               <CheckCircle2 className="w-3 h-3" /> Ativo
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 text-zinc-500 bg-zinc-100 px-2 py-0.5 rounded text-[11px] font-medium border border-zinc-200">
+                            <span className="inline-flex items-center gap-1 text-zinc-500 bg-zinc-100 px-2 py-0.5 rounded text-[11px] font-medium border border-zinc-200 hover:bg-zinc-200 transition-colors">
                               <XCircle className="w-3 h-3" /> Inativo
                             </span>
                           )}
@@ -384,8 +396,8 @@ export default function AdminProducts() {
                 />
               </div>
 
-              {/* Category & Price */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Category & Price & NCM */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1">
                   <label className="text-xs font-semibold text-zinc-700 block">
                     Categoria <span className="text-red-500">*</span>
@@ -416,6 +428,19 @@ export default function AdminProducts() {
                     placeholder="99.90"
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-700 block">
+                    Código NCM (Fiscal)
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="Ex: 48131000"
+                    value={ncm}
+                    onChange={(e) => setNcm(e.target.value)}
+                    className="font-mono text-xs"
                   />
                 </div>
               </div>
