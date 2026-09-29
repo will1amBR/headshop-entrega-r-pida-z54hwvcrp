@@ -71,6 +71,8 @@ export async function createProduct(data: {
   description: string
   price: number
   stock: number
+  cost_price?: number
+  min_stock?: number
   featured: boolean
   active: boolean
   category: string
@@ -82,6 +84,8 @@ export async function createProduct(data: {
   formData.append('description', data.description)
   formData.append('price', String(data.price))
   formData.append('stock', String(data.stock))
+  if (data.cost_price !== undefined) formData.append('cost_price', String(data.cost_price))
+  if (data.min_stock !== undefined) formData.append('min_stock', String(data.min_stock))
   formData.append('featured', String(data.featured))
   formData.append('active', String(data.active))
   formData.append('category', data.category)
@@ -99,6 +103,8 @@ export async function updateProduct(
     description: string
     price: number
     stock: number
+    cost_price?: number
+    min_stock?: number
     featured: boolean
     active: boolean
     category: string
@@ -111,6 +117,8 @@ export async function updateProduct(
   if (data.description !== undefined) formData.append('description', data.description)
   if (data.price !== undefined) formData.append('price', String(data.price))
   if (data.stock !== undefined) formData.append('stock', String(data.stock))
+  if (data.cost_price !== undefined) formData.append('cost_price', String(data.cost_price))
+  if (data.min_stock !== undefined) formData.append('min_stock', String(data.min_stock))
   if (data.featured !== undefined) formData.append('featured', String(data.featured))
   if (data.active !== undefined) formData.append('active', String(data.active))
   if (data.category !== undefined) formData.append('category', data.category)

@@ -1,9 +1,22 @@
 import React, { useEffect, useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { ShoppingBag, Clock, DollarSign, Package, ArrowRight, TrendingUp } from 'lucide-react'
+import {
+  ShoppingBag,
+  Clock,
+  DollarSign,
+  Package,
+  ArrowRight,
+  TrendingUp,
+  AlertTriangle,
+  RotateCcw,
+  QrCode,
+  Truck,
+} from 'lucide-react'
 import { Order, Product } from '@/types/ecommerce'
 import { getOrders } from '@/services/orders'
 import { getAllProductsAdmin } from '@/services/products'
+import { getPayments } from '@/services/payments'
+import { calculateRecompraSuggestions } from '@/services/suppliers'
 import { formatBRL, formatDateTime } from '@/lib/formatters'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -12,14 +25,26 @@ import { useRealtime } from '@/hooks/use-realtime'
 export default function AdminDashboard() {
   const [orders, setOrders] = useState<Order[]>([])
   const [products, setProducts] = useState<Product[]>([])
+  const [lowStockCount, setLowStockCount] = useState(0)
+  const [pixPaidCount, setPixPaidCount] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Load orders & products
+  // Load orders & products & payments
   const loadData = async () => {
     try {
-      const [allOrders, allProds] = await Promise.all([getOrders(), getAllProductsAdmin()])
+      const [allOrders, allProds, allPayments] = await Promise.all([
+        getOrders(),
+        getAllProductsAdmin(),
+        getPayments(),
+      ])
       setOrders(allOrders)
       setProducts(allProds)
+
+      const suggestions = calculateRecompraSuggestions(allProds)
+      setLowStockCount(suggestions.length)
+
+      const pixCount = allPayments.filter((p) => p.status === 'pago').length
+      setPixPaidCount(pixCount)
     } catch (e) {
       console.error('Erro ao carregar dados do dashboard admin', e)
     } finally {
@@ -74,18 +99,64 @@ export default function AdminDashboard() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-mono uppercase tracking-wider text-zinc-500 font-semibold">
-            Visão Geral
+            Visão Geral Integrada
           </span>
           <h1 className="font-display font-bold text-2xl sm:text-3xl text-zinc-950">
             Painel de Controle
           </h1>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Button asChild variant="outline" size="sm" className="border-zinc-300 text-xs">
+            <Link to="/admin/financeiro">Financeiro (Pix/Cartão)</Link>
+          </Button>
+          <Button asChild variant="outline" size="sm" className="border-zinc-300 text-xs">
+            <Link to="/admin/expedicao">Expedição & NF-e</Link>
+          </Button>
           <Button asChild size="sm" className="bg-[#0A0A0A] hover:bg-zinc-800 text-white text-xs">
             <Link to="/admin/pedidos">Ver Todos os Pedidos</Link>
           </Button>
         </div>
       </div>
+
+      {/* Alerta Visual de Baixa de Estoque quando houver produtos abaixo do mínimo */}
+      {lowStockCount > 0 && (
+        <div className="p-4 bg-red-50 border-2 border-red-200 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in shadow-xs">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-red-600 text-white rounded-xl shadow-xs">
+              <AlertTriangle className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-bold text-red-950 text-sm">
+                Atenção de Estoque: {lowStockCount} produto(s) abaixo do estoque mínimo!
+              </h3>
+              <p className="text-xs text-red-800">
+                Itens com saldo crítico detectados. A recompra automática agrupada por fornecedor já
+                está calculada.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              asChild
+              size="sm"
+              className="bg-red-700 hover:bg-red-800 text-white text-xs font-bold gap-1.5 shadow-sm"
+            >
+              <Link to="/admin/recompras">
+                <RotateCcw className="w-3.5 h-3.5" />
+                Gerar Recompra
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="border-red-300 text-red-900 bg-white hover:bg-red-100 text-xs"
+            >
+              <Link to="/admin/estoque">Ver no Estoque</Link>
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* 4 Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">

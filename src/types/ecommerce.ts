@@ -12,6 +12,8 @@ export interface Product {
   name: string
   description: string
   price: number
+  cost_price?: number
+  min_stock?: number
   image?: string
   stock: number
   featured: boolean
@@ -21,6 +23,117 @@ export interface Product {
   expand?: {
     category?: Category
   }
+  created: string
+  updated: string
+}
+
+export type PaymentMethod = 'pix' | 'cartao' | 'outro'
+export type PaymentStatus = 'pendente' | 'pago' | 'expirado' | 'cancelado'
+
+export interface Payment {
+  id: string
+  order: string
+  expand?: {
+    order?: Order
+  }
+  gateway: string
+  method: PaymentMethod
+  amount: number
+  status: PaymentStatus
+  txid?: string
+  qr_code?: string
+  payload?: any
+  paid_at?: string
+  created: string
+  updated: string
+}
+
+export type InvoiceStatus = 'pendente' | 'emitida' | 'cancelada' | 'erro'
+
+export interface Invoice {
+  id: string
+  order: string
+  expand?: {
+    order?: Order
+  }
+  invoice_number?: string
+  series?: string
+  status: InvoiceStatus
+  xml_url?: string
+  danfe_url?: string
+  access_key?: string
+  protocol?: string
+  issued_at?: string
+  error_message?: string
+  created: string
+  updated: string
+}
+
+export interface Supplier {
+  id: string
+  name: string
+  contact_person?: string
+  phone?: string
+  email?: string
+  cnpj?: string
+  supplied_products?: string
+  notes?: string
+  created: string
+  updated: string
+}
+
+export type StockMovementType = 'entrada' | 'saida' | 'ajuste'
+
+export interface StockMovement {
+  id: string
+  product: string
+  expand?: {
+    product?: Product
+    supplier?: Supplier
+  }
+  type: StockMovementType
+  quantity: number
+  reason: string
+  supplier?: string
+  movement_date?: string
+  created: string
+  updated: string
+}
+
+export type PurchaseOrderStatus = 'rascunho' | 'enviado' | 'confirmado' | 'recebido' | 'cancelado'
+
+export interface PurchaseOrderItem {
+  product_id: string
+  name: string
+  quantity: number
+  unit_cost: number
+  subtotal: number
+}
+
+export interface PurchaseOrder {
+  id: string
+  supplier: string
+  expand?: {
+    supplier?: Supplier
+  }
+  items: PurchaseOrderItem[]
+  status: PurchaseOrderStatus
+  total: number
+  expected_date?: string
+  received_at?: string
+  notes?: string
+  created: string
+  updated: string
+}
+
+export interface IntegrationSetting {
+  id: string
+  key: string
+  value?: string
+  environment?: string
+  status?: string
+  last_sync?: string
+  details?: any
   created: string
   updated: string
 }

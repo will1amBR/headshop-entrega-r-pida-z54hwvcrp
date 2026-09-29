@@ -1,11 +1,25 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { MessageCircle, CheckCircle2, ArrowLeft, ShieldCheck, AlertCircle } from 'lucide-react'
+import {
+  MessageCircle,
+  CheckCircle2,
+  ArrowLeft,
+  ShieldCheck,
+  AlertCircle,
+  QrCode,
+  CreditCard,
+  Copy,
+  Check,
+  ExternalLink,
+  Info,
+} from 'lucide-react'
 import { useCart } from '@/context/CartContext'
 import { BRAZIL_STATES, BrazilRegion } from '@/types/ecommerce'
 import { formatBRL, getFileUrl, getProductFallbackImage } from '@/lib/formatters'
 import { buildWhatsAppOrderMessage, buildWhatsAppUrl } from '@/lib/whatsapp'
 import { createOrder } from '@/services/orders'
+import { createMercadoPagoCharge } from '@/services/payments'
+import { deductOrderStock } from '@/services/stock'
 import { getSeoSettings } from '@/services/seo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -54,6 +68,15 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [orderSuccess, setOrderSuccess] = useState(false)
   const [savedOrderId, setSavedOrderId] = useState<string | null>(null)
+
+  // Opção de pagamento selecionada: 'whatsapp' | 'pix' | 'cartao'
+  const [paymentChoice, setPaymentChoice] = useState<'whatsapp' | 'pix' | 'cartao'>('whatsapp')
+  const [pixChargeData, setPixChargeData] = useState<{
+    txid?: string
+    qrCode?: string
+    isMock: boolean
+  } | null>(null)
+  const [copiedPix, setCopiedPix] = useState(false)
 
   useEffect(() => {
     getSeoSettings().then((s) => {
@@ -120,7 +143,15 @@ export default function CheckoutPage() {
     setFormData((prev) => ({ ...prev, cep: raw }))
   }
 
-  const handleSendOrderWhatsApp = async (e: React.FormEvent) => {
+  const handleCopyPix = () => {
+    if (pixChargeData?.qrCode) {
+      navigator.clipboard.writeText(pixChargeData.qrCode)
+      setCopiedPix(true)
+      setTimeout(() => setCopiedPix(false), 2500)
+    }
+  }
+
+  const handleCheckoutSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!validate()) return
     if (!selectedRegion) {
@@ -131,22 +162,7 @@ export default function CheckoutPage() {
 
     setIsSubmitting(true)
     try {
-      // 1. Build exact formatted WhatsApp message
-      const message = buildWhatsAppOrderMessage({
-        items,
-        subtotal,
-        shipping,
-        region: selectedRegion,
-        total,
-        customerName: formData.fullName.trim(),
-        phone: formData.phone.trim(),
-        address: formData.address.trim(),
-        city: formData.city.trim(),
-        state: formData.state.trim(),
-        cep: formData.cep.trim(),
-      })
-
-      // 2. Persist order to database with status 'novo'
+      // 1. Salvar o pedido no banco
       const orderRecord = await createOrder({
         customer_name: formData.fullName.trim(),
         phone: formData.phone.trim(),
@@ -169,15 +185,54 @@ export default function CheckoutPage() {
 
       setSavedOrderId(orderRecord.id)
 
-      // 3. Open WhatsApp in new tab
-      const waUrl = buildWhatsAppUrl(whatsappPhone, message)
-      window.open(waUrl, '_blank', 'noopener,noreferrer')
+      // Se o cliente escolheu Pix ou Cartão: criar a cobrança Mercado Pago
+      if (paymentChoice === 'pix' || paymentChoice === 'cartao') {
+        const charge = await createMercadoPagoCharge({
+          orderId: orderRecord.id,
+          amount: total,
+          method: paymentChoice,
+          customer: {
+            name: formData.fullName.trim(),
+            email: formData.email.trim(),
+            phone: formData.phone.trim(),
+          },
+        })
 
-      // 4. Clear cart & show success screen
+        if (paymentChoice === 'pix') {
+          setPixChargeData({
+            txid: charge.payment.txid,
+            qrCode: charge.qrCode,
+            isMock: charge.isMock,
+          })
+        }
+      }
+
+      // Preparar mensagem do WhatsApp
+      const message = buildWhatsAppOrderMessage({
+        items,
+        subtotal,
+        shipping,
+        region: selectedRegion,
+        total,
+        customerName: formData.fullName.trim(),
+        phone: formData.phone.trim(),
+        address: formData.address.trim(),
+        city: formData.city.trim(),
+        state: formData.state.trim(),
+        cep: formData.cep.trim(),
+      })
+
+      // Se foi via WhatsApp direto, abre o aplicativo
+      if (paymentChoice === 'whatsapp') {
+        const waUrl = buildWhatsAppUrl(whatsappPhone, message)
+        window.open(waUrl, '_blank', 'noopener,noreferrer')
+      }
+
+      // Limpar carrinho e avançar para tela de confirmação
       clearCart()
       setOrderSuccess(true)
     } catch (err) {
-      console.error('Erro ao salvar pedido', err)
+      console.error('Erro ao processar pedido:', err)
       alert('Ocorreu um erro ao registrar o pedido. Verifique os dados e tente novamente.')
     } finally {
       setIsSubmitting(false)
@@ -197,21 +252,102 @@ export default function CheckoutPage() {
               Pedido Registrado com Sucesso
             </span>
             <h1 className="font-display font-bold text-3xl sm:text-4xl text-zinc-950">
-              Pedido enviado!
+              {paymentChoice === 'pix'
+                ? 'Pague via Pix para Concluir'
+                : paymentChoice === 'cartao'
+                  ? 'Cobrança Criada com Sucesso!'
+                  : 'Pedido Enviado com Sucesso!'}
             </h1>
             <p className="text-zinc-600 text-base leading-relaxed">
-              Agradecemos a sua preferência. A janela do WhatsApp foi aberta com seu pedido
-              formatado.
-              <strong> Aguarde o contato da loja para confirmação e pagamento.</strong>
+              {paymentChoice === 'pix'
+                ? 'Copie o código Pix abaixo ou escaneie o QR Code para efetuar o pagamento instantâneo.'
+                : paymentChoice === 'cartao'
+                  ? 'Seu pedido foi registrado e nossa equipe enviará o link seguro de cartão ou confirmação.'
+                  : 'Agradecemos sua preferência. A janela do WhatsApp foi aberta com seu pedido formatado.'}
             </p>
           </div>
+
+          {/* Bloco Pix Copia e Cola / QR Code */}
+          {paymentChoice === 'pix' && pixChargeData && (
+            <div className="p-5 bg-zinc-50 border-2 border-zinc-300 rounded-2xl text-left space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <QrCode className="w-5 h-5 text-zinc-900" />
+                  <span className="font-bold text-sm text-zinc-900">
+                    Pix Copia e Cola • Mercado Pago
+                  </span>
+                </div>
+                {pixChargeData.txid && (
+                  <span className="text-[11px] font-mono text-zinc-500">
+                    Ref: {pixChargeData.txid}
+                  </span>
+                )}
+              </div>
+
+              {pixChargeData.isMock && (
+                <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-2 text-xs text-amber-800">
+                  <Info className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <span>
+                    <strong>Modo Demonstração / Degradação Elegante:</strong> O Gateway de Pagamento
+                    Mercado Pago ainda não tem o token de produção configurado pelo administrador.
+                    Você pode pagar combinando no WhatsApp sem travar seu pedido!
+                  </span>
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <label className="text-xs font-semibold text-zinc-700 block">
+                  Código Pix (Copia e Cola):
+                </label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    readOnly
+                    value={pixChargeData.qrCode || ''}
+                    className="font-mono text-xs bg-white text-zinc-600 select-all"
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleCopyPix}
+                    className="gap-1.5 shrink-0 bg-black text-white hover:bg-zinc-800 text-xs"
+                  >
+                    {copiedPix ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        Copiado!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        Copiar Pix
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="pt-2 flex justify-between items-center text-xs text-zinc-500 font-mono">
+                <span>Aprovação em segundos</span>
+                <a
+                  href={buildWhatsAppUrl(
+                    whatsappPhone,
+                    `Olá! Acabei de registrar o pedido #${savedOrderId} e gerei o pagamento via Pix. Podem confirmar?`,
+                  )}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-emerald-700 font-semibold hover:underline flex items-center gap-1"
+                >
+                  <MessageCircle className="w-3.5 h-3.5 fill-current" />
+                  Avisar no WhatsApp
+                </a>
+              </div>
+            </div>
+          )}
 
           {savedOrderId && (
             <div className="p-4 bg-zinc-50 border border-zinc-200 rounded-lg text-xs font-mono text-zinc-600">
               Identificador do pedido: <span className="font-bold text-black">{savedOrderId}</span>
             </div>
           )}
-
           <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Button
               size="lg"
@@ -258,7 +394,7 @@ export default function CheckoutPage() {
 
         {/* 2 Column Layout: Delivery Form (65%) | Itemized Summary (35% sticky) */}
         <form
-          onSubmit={handleSendOrderWhatsApp}
+          onSubmit={handleCheckoutSubmit}
           className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start"
         >
           {/* Left Column: Delivery Form */}
@@ -430,6 +566,119 @@ export default function CheckoutPage() {
                 </div>
               </div>
             </div>
+
+            {/* SELEÇÃO DO MÉTODO DE PAGAMENTO (WhatsApp x Gateway Mercado Pago) */}
+            <div className="bg-white border border-zinc-200 rounded-xl p-6 space-y-4 shadow-sm">
+              <div>
+                <h2 className="font-display font-bold text-lg text-zinc-950">Forma de Pagamento</h2>
+                <p className="text-xs text-zinc-500 mt-1">
+                  Escolha como prefere pagar. Suportamos pagamento direto com Pix, Cartão ou via
+                  WhatsApp com a equipe.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {/* Opção 1: Pix Mercado Pago */}
+                <button
+                  type="button"
+                  onClick={() => setPaymentChoice('pix')}
+                  className={`p-4 rounded-xl border text-left transition-all flex flex-col justify-between ${
+                    paymentChoice === 'pix'
+                      ? 'border-black bg-zinc-950 text-white shadow-md'
+                      : 'border-zinc-200 hover:border-zinc-400 bg-white text-zinc-800'
+                  }`}
+                >
+                  <div className="flex items-center justify-between w-full mb-3">
+                    <QrCode
+                      className={`w-5 h-5 ${paymentChoice === 'pix' ? 'text-emerald-400' : 'text-emerald-600'}`}
+                    />
+                    <span
+                      className={`text-[10px] font-mono uppercase font-bold px-1.5 py-0.5 rounded ${
+                        paymentChoice === 'pix'
+                          ? 'bg-zinc-800 text-zinc-300'
+                          : 'bg-zinc-100 text-zinc-600'
+                      }`}
+                    >
+                      Instantâneo
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-bold text-sm block">Pagar com Pix</span>
+                    <span
+                      className={`text-[11px] ${paymentChoice === 'pix' ? 'text-zinc-300' : 'text-zinc-500'}`}
+                    >
+                      QR Code & Copia e Cola
+                    </span>
+                  </div>
+                </button>
+
+                {/* Opção 2: Cartão de Crédito */}
+                <button
+                  type="button"
+                  onClick={() => setPaymentChoice('cartao')}
+                  className={`p-4 rounded-xl border text-left transition-all flex flex-col justify-between ${
+                    paymentChoice === 'cartao'
+                      ? 'border-black bg-zinc-950 text-white shadow-md'
+                      : 'border-zinc-200 hover:border-zinc-400 bg-white text-zinc-800'
+                  }`}
+                >
+                  <div className="flex items-center justify-between w-full mb-3">
+                    <CreditCard
+                      className={`w-5 h-5 ${paymentChoice === 'cartao' ? 'text-blue-400' : 'text-blue-600'}`}
+                    />
+                    <span
+                      className={`text-[10px] font-mono uppercase font-bold px-1.5 py-0.5 rounded ${
+                        paymentChoice === 'cartao'
+                          ? 'bg-zinc-800 text-zinc-300'
+                          : 'bg-zinc-100 text-zinc-600'
+                      }`}
+                    >
+                      Até 12x
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-bold text-sm block">Cartão de Crédito</span>
+                    <span
+                      className={`text-[11px] ${paymentChoice === 'cartao' ? 'text-zinc-300' : 'text-zinc-500'}`}
+                    >
+                      Via Mercado Pago
+                    </span>
+                  </div>
+                </button>
+
+                {/* Opção 3: WhatsApp Tradicional */}
+                <button
+                  type="button"
+                  onClick={() => setPaymentChoice('whatsapp')}
+                  className={`p-4 rounded-xl border text-left transition-all flex flex-col justify-between ${
+                    paymentChoice === 'whatsapp'
+                      ? 'border-[#25D366] bg-emerald-950 text-white shadow-md'
+                      : 'border-zinc-200 hover:border-zinc-400 bg-white text-zinc-800'
+                  }`}
+                >
+                  <div className="flex items-center justify-between w-full mb-3">
+                    <MessageCircle className="w-5 h-5 text-[#25D366] fill-current" />
+                    <span
+                      className={`text-[10px] font-mono uppercase font-bold px-1.5 py-0.5 rounded ${
+                        paymentChoice === 'whatsapp'
+                          ? 'bg-emerald-900 text-emerald-200'
+                          : 'bg-emerald-50 text-emerald-700'
+                      }`}
+                    >
+                      Tradicional
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-bold text-sm block">Combinar WhatsApp</span>
+                    <span
+                      className={`text-[11px] ${paymentChoice === 'whatsapp' ? 'text-zinc-300' : 'text-zinc-500'}`}
+                    >
+                      Fale com atendente
+                    </span>
+                  </div>
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Right Column: Itemized Summary & Send CTA */}
@@ -498,20 +747,44 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Big WhatsApp CTA Button */}
+              {/* Dynamic CTA Button based on payment selection */}
               <div className="space-y-3 pt-2">
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  size="lg"
-                  className="w-full bg-[#25D366] hover:bg-[#1EBE5A] text-white font-bold h-14 text-sm sm:text-base shadow-lg transition-transform hover:scale-101 active:scale-99 gap-2"
-                >
-                  <MessageCircle className="w-5 h-5 fill-current" />
-                  {isSubmitting ? 'Registrando pedido...' : 'Enviar Pedido pelo WhatsApp'}
-                </Button>
+                {paymentChoice === 'whatsapp' ? (
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    size="lg"
+                    className="w-full bg-[#25D366] hover:bg-[#1EBE5A] text-white font-bold h-14 text-sm sm:text-base shadow-lg transition-transform hover:scale-101 active:scale-99 gap-2"
+                  >
+                    <MessageCircle className="w-5 h-5 fill-current" />
+                    {isSubmitting ? 'Registrando pedido...' : 'Enviar Pedido pelo WhatsApp'}
+                  </Button>
+                ) : paymentChoice === 'pix' ? (
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    size="lg"
+                    className="w-full bg-[#0A0A0A] hover:bg-zinc-800 text-white font-bold h-14 text-sm sm:text-base shadow-lg transition-transform hover:scale-101 active:scale-99 gap-2"
+                  >
+                    <QrCode className="w-5 h-5 text-emerald-400" />
+                    {isSubmitting ? 'Gerando cobrança Pix...' : `Pagar ${formatBRL(total)} via Pix`}
+                  </Button>
+                ) : (
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    size="lg"
+                    className="w-full bg-[#0A0A0A] hover:bg-zinc-800 text-white font-bold h-14 text-sm sm:text-base shadow-lg transition-transform hover:scale-101 active:scale-99 gap-2"
+                  >
+                    <CreditCard className="w-5 h-5 text-blue-400" />
+                    {isSubmitting ? 'Processando...' : `Pagar ${formatBRL(total)} no Cartão`}
+                  </Button>
+                )}
+
                 <p className="text-[11px] text-center text-zinc-500">
-                  Ao clicar, o WhatsApp será aberto com seu pedido pronto para envio e a loja
-                  receberá sua solicitação.
+                  {paymentChoice === 'whatsapp'
+                    ? 'Ao clicar, o WhatsApp será aberto com seu pedido formatado.'
+                    : 'Processamento seguro com geração imediata de QR Code e comprovante.'}
                 </p>
               </div>
 

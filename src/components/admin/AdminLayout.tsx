@@ -15,6 +15,13 @@ import {
   Menu,
   X,
   User,
+  CreditCard,
+  Boxes,
+  RotateCcw,
+  Building2,
+  Sliders,
+  DollarSign,
+  TrendingDown,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { Button } from '@/components/ui/button'
@@ -30,16 +37,52 @@ export const AdminLayout: React.FC = () => {
     navigate('/admin/login')
   }
 
-  const navItems = [
-    { label: 'Dashboard', path: '/admin', icon: LayoutDashboard, exact: true },
-    { label: 'Kanban Pedidos', path: '/admin/kanban', icon: KanbanSquare },
-    { label: 'Pedidos (Lista)', path: '/admin/pedidos', icon: ShoppingBag },
-    { label: 'Expedição', path: '/admin/expedicao', icon: Truck },
-    { label: 'Área Comercial', path: '/admin/comercial', icon: LineChart },
-    { label: 'CRM Clientes', path: '/admin/crm', icon: Users },
-    { label: 'Marketing & Campanhas', path: '/admin/marketing', icon: Megaphone },
-    { label: 'Produtos', path: '/admin/produtos', icon: Package },
-    { label: 'Categorias', path: '/admin/categorias', icon: Layers },
+  // Grupos reorganizados conforme requisitos:
+  // Vendas, Financeiro, Operação, Inteligência, Catálogo, Sistema
+  const navGroups = [
+    {
+      group: 'Geral',
+      items: [{ label: 'Dashboard', path: '/admin', icon: LayoutDashboard, exact: true }],
+    },
+    {
+      group: 'Vendas',
+      items: [
+        { label: 'Pedidos (Lista)', path: '/admin/pedidos', icon: ShoppingBag },
+        { label: 'Kanban Pedidos', path: '/admin/kanban', icon: KanbanSquare },
+      ],
+    },
+    {
+      group: 'Financeiro',
+      items: [{ label: 'Financeiro & Cobranças', path: '/admin/financeiro', icon: DollarSign }],
+    },
+    {
+      group: 'Operação & Estoque',
+      items: [
+        { label: 'Expedição & NF-e', path: '/admin/expedicao', icon: Truck },
+        { label: 'Gestão de Estoque', path: '/admin/estoque', icon: Boxes },
+        { label: 'Recompras Automáticas', path: '/admin/recompras', icon: RotateCcw },
+        { label: 'Fornecedores', path: '/admin/fornecedores', icon: Building2 },
+      ],
+    },
+    {
+      group: 'Inteligência',
+      items: [
+        { label: 'Área Comercial', path: '/admin/comercial', icon: LineChart },
+        { label: 'CRM Clientes', path: '/admin/crm', icon: Users },
+        { label: 'Marketing & Campanhas', path: '/admin/marketing', icon: Megaphone },
+      ],
+    },
+    {
+      group: 'Catálogo',
+      items: [
+        { label: 'Produtos', path: '/admin/produtos', icon: Package },
+        { label: 'Categorias', path: '/admin/categorias', icon: Layers },
+      ],
+    },
+    {
+      group: 'Sistema',
+      items: [{ label: 'Integrações (Bling & MP)', path: '/admin/integracoes', icon: Sliders }],
+    },
   ]
 
   const isCurrent = (path: string, exact?: boolean) => {
@@ -72,28 +115,34 @@ export const AdminLayout: React.FC = () => {
         </div>
 
         {/* Nav Links */}
-        <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
-          <div className="px-3 pb-2 text-[10px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">
-            Navegação Principal
-          </div>
-          {navItems.map((item) => {
-            const Icon = item.icon
-            const active = isCurrent(item.path, item.exact)
-            return (
-              <Link
-                key={item.label}
-                to={item.path}
-                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all ${
-                  active
-                    ? 'bg-zinc-800 text-white font-semibold shadow-inner border border-zinc-700/60'
-                    : 'text-zinc-400 hover:text-white hover:bg-zinc-900/80'
-                }`}
-              >
-                <Icon className={`w-4 h-4 ${active ? 'text-white' : 'text-zinc-400'}`} />
-                <span>{item.label}</span>
-              </Link>
-            )
-          })}
+        <nav className="flex-1 px-3 py-4 space-y-4 overflow-y-auto">
+          {navGroups.map((grp) => (
+            <div key={grp.group} className="space-y-1">
+              <div className="px-3 text-[10px] font-mono uppercase tracking-wider text-zinc-500 font-bold">
+                {grp.group}
+              </div>
+              {grp.items.map((item) => {
+                const Icon = item.icon
+                const active = isCurrent(item.path, item.exact)
+                return (
+                  <Link
+                    key={item.label}
+                    to={item.path}
+                    className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-all ${
+                      active
+                        ? 'bg-zinc-800 text-white font-semibold shadow-inner border border-zinc-700/60'
+                        : 'text-zinc-400 hover:text-white hover:bg-zinc-900/80'
+                    }`}
+                  >
+                    <Icon
+                      className={`w-4 h-4 shrink-0 ${active ? 'text-white' : 'text-zinc-400'}`}
+                    />
+                    <span className="truncate">{item.label}</span>
+                  </Link>
+                )
+              })}
+            </div>
+          ))}
         </nav>
 
         {/* Bottom User & Logout */}
@@ -167,25 +216,32 @@ export const AdminLayout: React.FC = () => {
 
         {/* Mobile Sidebar Overlay */}
         {mobileSidebarOpen && (
-          <div className="md:hidden bg-[#0A0A0A] text-zinc-300 px-6 py-6 border-b border-zinc-800 space-y-4 animate-fade-in">
-            <nav className="space-y-2">
-              {navItems.map((item) => {
-                const Icon = item.icon
-                const active = isCurrent(item.path, item.exact)
-                return (
-                  <Link
-                    key={item.label}
-                    to={item.path}
-                    onClick={() => setMobileSidebarOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium ${
-                      active ? 'bg-zinc-800 text-white font-semibold' : 'text-zinc-400'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    {item.label}
-                  </Link>
-                )
-              })}
+          <div className="md:hidden bg-[#0A0A0A] text-zinc-300 px-5 py-4 border-b border-zinc-800 space-y-4 max-h-[80vh] overflow-y-auto animate-fade-in">
+            <nav className="space-y-4">
+              {navGroups.map((grp) => (
+                <div key={grp.group} className="space-y-1">
+                  <div className="px-2 text-[10px] font-mono uppercase tracking-wider text-zinc-500 font-bold">
+                    {grp.group}
+                  </div>
+                  {grp.items.map((item) => {
+                    const Icon = item.icon
+                    const active = isCurrent(item.path, item.exact)
+                    return (
+                      <Link
+                        key={item.label}
+                        to={item.path}
+                        onClick={() => setMobileSidebarOpen(false)}
+                        className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium ${
+                          active ? 'bg-zinc-800 text-white font-semibold' : 'text-zinc-400'
+                        }`}
+                      >
+                        <Icon className="w-4 h-4 shrink-0" />
+                        <span>{item.label}</span>
+                      </Link>
+                    )
+                  })}
+                </div>
+              ))}
             </nav>
             <div className="pt-4 border-t border-zinc-800 flex justify-between items-center">
               <span className="text-xs text-zinc-500 font-mono">{user?.email}</span>

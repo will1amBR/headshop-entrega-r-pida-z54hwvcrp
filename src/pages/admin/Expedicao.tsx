@@ -18,7 +18,7 @@ import {
   ShieldAlert,
   ClipboardList,
 } from 'lucide-react'
-import { Order, Shipment, ShippingStatus } from '@/types/ecommerce'
+import { Order, Shipment, ShippingStatus, Invoice } from '@/types/ecommerce'
 import { getOrders, updateOrderStatus } from '@/services/orders'
 import {
   getShipments,
@@ -26,6 +26,8 @@ import {
   updateShipment,
   syncOrderShipment,
 } from '@/services/shipments'
+import { emitInvoiceBling, getInvoices, getAvailableCarriers } from '@/services/bling'
+import { deductOrderStock } from '@/services/stock'
 import { formatBRL, formatDateTime } from '@/lib/formatters'
 import { buildWhatsAppUrl, buildDispatchNotificationMessage } from '@/lib/whatsapp'
 import { Button } from '@/components/ui/button'
@@ -82,12 +84,21 @@ export default function AdminExpedicao() {
   const [readingShipment, setReadingShipment] = useState<Shipment | null>(null)
   const [isUpdatingReturnStatus, setIsUpdatingReturnStatus] = useState(false)
 
+  // Notas Fiscais
+  const [invoices, setInvoices] = useState<Invoice[]>([])
+  const [isEmittingNfe, setIsEmittingNfe] = useState<string | null>(null)
+
   const loadData = async () => {
     setIsLoading(true)
     try {
-      const [ordersData, shipmentsData] = await Promise.all([getOrders(), getShipments()])
+      const [ordersData, shipmentsData, invoicesData] = await Promise.all([
+        getOrders(),
+        getShipments(),
+        getInvoices(),
+      ])
       setOrders(ordersData)
       setShipments(shipmentsData)
+      setInvoices(invoicesData)
     } catch (e) {
       console.error('Erro ao carregar dados de expedição:', e)
     } finally {
@@ -263,9 +274,12 @@ export default function AdminExpedicao() {
         shipped_at: dispatchStatus === 'enviado' ? now : undefined,
       })
 
-      // 2. Se status for "enviado", refletir no status do pedido principal também
+      // 2. Se status for "enviado", refletir no status do pedido principal também e dar baixa no estoque
       if (dispatchStatus === 'enviado') {
         await updateOrderStatus(dispatchModalOrder.id, 'enviado')
+        if (dispatchModalOrder.items && dispatchModalOrder.items.length > 0) {
+          await deductOrderStock(dispatchModalOrder.id, dispatchModalOrder.items)
+        }
       } else if (dispatchStatus === 'pronto_envio') {
         // Pedido segue 'em preparo' se ainda estiver sendo finalizado
         if (dispatchModalOrder.status === 'novo') {
@@ -280,6 +294,21 @@ export default function AdminExpedicao() {
       alert('Erro ao registrar envio. Verifique o console.')
     } finally {
       setIsSubmittingDispatch(false)
+    }
+  }
+
+  // Ação: Emitir Nota Fiscal via Bling ERP v3
+  const handleEmitNfe = async (order: Order) => {
+    setIsEmittingNfe(order.id)
+    try {
+      const res = await emitInvoiceBling(order)
+      alert(res.message)
+      await loadData()
+    } catch (err: any) {
+      console.error('Erro ao emitir NF-e:', err)
+      alert(err.message || 'Falha ao emitir nota fiscal.')
+    } finally {
+      setIsEmittingNfe(null)
     }
   }
 
@@ -373,6 +402,14 @@ export default function AdminExpedicao() {
       setIsUpdatingReturnStatus(false)
     }
   }
+
+  const invoiceByOrderId = useMemo(() => {
+    const map = new Map<string, Invoice>()
+    invoices.forEach((inv) => {
+      if (inv.order) map.set(inv.order, inv)
+    })
+    return map
+  }, [invoices])
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto select-none">
@@ -667,7 +704,34 @@ export default function AdminExpedicao() {
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {/* Botão Emitir NF-e Bling */}
+                        {invoiceByOrderId.has(order.id) ? (
+                          <a
+                            href={invoiceByOrderId.get(order.id)?.danfe_url || '#'}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 h-8 px-2.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-300 hover:bg-emerald-100"
+                            title="Visualizar DANFE / Nota Fiscal"
+                          >
+                            <FileText className="w-3.5 h-3.5 text-emerald-700" />
+                            <span>NF-e #{invoiceByOrderId.get(order.id)?.invoice_number}</span>
+                          </a>
+                        ) : (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={isEmittingNfe === order.id}
+                            onClick={() => handleEmitNfe(order)}
+                            className="h-8 text-xs gap-1 border-emerald-300 text-emerald-800 hover:bg-emerald-50"
+                          >
+                            <FileText className="w-3.5 h-3.5 text-emerald-600" />
+                            <span>
+                              {isEmittingNfe === order.id ? 'Emitindo...' : 'Emitir NF Bling'}
+                            </span>
+                          </Button>
+                        )}
+
                         <Button
                           size="sm"
                           variant="outline"
@@ -1072,13 +1136,36 @@ export default function AdminExpedicao() {
                 </Select>
               </div>
 
-              {/* Transportadora */}
+              {/* Opções Rápidas de Transportadoras Integradas Bling */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-700">Transportadora:</label>
+                <label className="text-xs font-semibold text-zinc-700 block">
+                  Transportadoras Integradas Bling ERP (Clique para preencher rápido):
+                </label>
+                <div className="grid grid-cols-2 gap-2 pb-1">
+                  {getAvailableCarriers(
+                    dispatchModalOrder.region || 'Sul',
+                    dispatchModalOrder.total,
+                  ).map((carrier) => (
+                    <button
+                      key={carrier.id}
+                      type="button"
+                      onClick={() => setDispatchCarrier(carrier.name)}
+                      className={`text-left p-2 rounded-lg border text-xs transition-colors ${
+                        dispatchCarrier === carrier.name
+                          ? 'border-black bg-zinc-900 text-white'
+                          : 'border-zinc-200 bg-white hover:border-zinc-300 text-zinc-800'
+                      }`}
+                    >
+                      <div className="font-bold truncate">{carrier.name}</div>
+                      <div className="text-[10px] opacity-75">{carrier.service}</div>
+                    </button>
+                  ))}
+                </div>
+
                 <Input
                   value={dispatchCarrier}
                   onChange={(e) => setDispatchCarrier(e.target.value)}
-                  placeholder="Ex: Sedex Express / Correios, Loggi, Jadlog, Motoboy..."
+                  placeholder="Ou digite outra transportadora..."
                   className="text-xs bg-white"
                   required
                 />

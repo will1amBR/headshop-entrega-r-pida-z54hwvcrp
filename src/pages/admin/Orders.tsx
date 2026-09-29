@@ -1,13 +1,16 @@
 import React, { useEffect, useState, useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Search, Filter, MessageCircle, Eye, RefreshCw, X } from 'lucide-react'
-import { Order, OrderStatus } from '@/types/ecommerce'
+import { Order, OrderStatus, Invoice } from '@/types/ecommerce'
 import { getOrders, updateOrderStatus } from '@/services/orders'
 import { syncOrderShipment } from '@/services/shipments'
+import { emitInvoiceBling, getInvoices } from '@/services/bling'
+import { deductOrderStock } from '@/services/stock'
 import { formatBRL, formatDateTime } from '@/lib/formatters'
 import { buildWhatsAppUrl } from '@/lib/whatsapp'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { FileText } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -33,18 +36,15 @@ export default function AdminOrders() {
   const [search, setSearch] = useState<string>('')
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false)
+  const [invoices, setInvoices] = useState<Invoice[]>([])
+  const [isEmittingNfe, setIsEmittingNfe] = useState<string | null>(null)
 
   const loadData = async () => {
     setIsLoading(true)
     try {
-      const data = await getOrders()
-      setOrders(data)
-
-      const urlId = searchParams.get('id')
-      if (urlId) {
-        const found = data.find((o) => o.id === urlId)
-        if (found) setSelectedOrder(found)
-      }
+      const [ordersData, invoicesData] = await Promise.all([getOrders(), getInvoices()])
+      setOrders(ordersData)
+      setInvoices(invoicesData)
     } catch (e) {
       console.error('Erro ao buscar pedidos', e)
     } finally {
@@ -75,6 +75,13 @@ export default function AdminOrders() {
       setSelectedOrder(updated)
       setOrders((prev) => prev.map((o) => (o.id === updated.id ? updated : o)))
 
+      // Se passou para enviado ou entregue, baixa estoque dos itens
+      if (newStatus === 'enviado' || newStatus === 'entregue') {
+        if (selectedOrder.items && selectedOrder.items.length > 0) {
+          await deductOrderStock(selectedOrder.id, selectedOrder.items)
+        }
+      }
+
       // Sincronizar expedição se aplicável
       const now = new Date().toISOString().replace('T', ' ').substring(0, 19)
       if (newStatus === 'enviado') {
@@ -89,6 +96,20 @@ export default function AdminOrders() {
       alert('Falha ao atualizar o status do pedido.')
     } finally {
       setIsUpdatingStatus(false)
+    }
+  }
+
+  const handleEmitNfe = async (order: Order) => {
+    setIsEmittingNfe(order.id)
+    try {
+      const res = await emitInvoiceBling(order)
+      alert(res.message)
+      await loadData()
+    } catch (err: any) {
+      console.error('Erro ao emitir NF-e:', err)
+      alert(err.message || 'Falha ao emitir nota fiscal.')
+    } finally {
+      setIsEmittingNfe(null)
     }
   }
 
@@ -317,6 +338,47 @@ export default function AdminOrders() {
                     <MessageCircle className="w-4 h-4 fill-current" />
                     Chamar Cliente no WhatsApp
                   </a>
+                </div>
+
+                {/* Emissão Bling NF-e no detalhe do pedido */}
+                <div className="pt-2 border-t border-zinc-200 flex items-center justify-between">
+                  {(() => {
+                    const inv = invoices.find((i) => i.order === selectedOrder.id)
+                    if (inv) {
+                      return (
+                        <div className="flex items-center gap-2 text-xs">
+                          <span className="text-emerald-700 font-semibold font-mono flex items-center gap-1">
+                            <FileText className="w-4 h-4" /> NF-e #{inv.invoice_number} (Emitida
+                            Bling)
+                          </span>
+                          <a
+                            href={inv.danfe_url || '#'}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-zinc-900 underline font-medium hover:text-black"
+                          >
+                            Abrir DANFE
+                          </a>
+                        </div>
+                      )
+                    }
+                    return (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        disabled={isEmittingNfe === selectedOrder.id}
+                        onClick={() => handleEmitNfe(selectedOrder)}
+                        className="text-xs border-emerald-300 text-emerald-800 hover:bg-emerald-50 gap-1.5"
+                      >
+                        <FileText className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>
+                          {isEmittingNfe === selectedOrder.id
+                            ? 'Emitindo no Bling...'
+                            : 'Emitir Nota Fiscal (Bling ERP)'}
+                        </span>
+                      </Button>
+                    )
+                  })()}
                 </div>
               </div>
 

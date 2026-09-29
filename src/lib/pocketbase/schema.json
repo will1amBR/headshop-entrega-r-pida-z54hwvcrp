@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-29T01:53:49.467Z",
+  "generatedAt": "2026-09-29T02:13:08.518Z",
   "collections": [
     {
       "name": "users",
@@ -167,6 +167,18 @@
         {
           "name": "ncm",
           "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "min_stock",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "cost_price",
+          "type": "number",
           "required": false,
           "system": false
         }
@@ -540,6 +552,470 @@
         "CREATE INDEX idx_shipments_status ON shipments (shipping_status)",
         "CREATE INDEX idx_shipments_created ON shipments (created)"
       ]
+    },
+    {
+      "name": "payments",
+      "type": "base",
+      "apiRules": {
+        "list": "",
+        "view": "",
+        "create": "",
+        "update": "",
+        "delete": ""
+      },
+      "fields": [
+        {
+          "name": "order",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "orders"
+        },
+        {
+          "name": "gateway",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "method",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["pix", "cartao", "outro"]
+        },
+        {
+          "name": "amount",
+          "type": "number",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["pendente", "pago", "expirado", "cancelado"]
+        },
+        {
+          "name": "txid",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "qr_code",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "payload",
+          "type": "json",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "paid_at",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_payments_order ON payments (order)",
+        "CREATE INDEX idx_payments_status ON payments (status)",
+        "CREATE INDEX idx_payments_created ON payments (created)"
+      ]
+    },
+    {
+      "name": "invoices",
+      "type": "base",
+      "apiRules": {
+        "list": "",
+        "view": "",
+        "create": "",
+        "update": "",
+        "delete": ""
+      },
+      "fields": [
+        {
+          "name": "order",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "orders"
+        },
+        {
+          "name": "invoice_number",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "series",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["pendente", "emitida", "cancelada", "erro"]
+        },
+        {
+          "name": "xml_url",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "danfe_url",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "access_key",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "protocol",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "issued_at",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "error_message",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_invoices_order ON invoices (order)",
+        "CREATE INDEX idx_invoices_status ON invoices (status)",
+        "CREATE INDEX idx_invoices_created ON invoices (created)"
+      ]
+    },
+    {
+      "name": "suppliers",
+      "type": "base",
+      "apiRules": {
+        "list": "",
+        "view": "",
+        "create": "",
+        "update": "",
+        "delete": ""
+      },
+      "fields": [
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "contact_person",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "phone",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "email",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "cnpj",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "supplied_products",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "notes",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": ["CREATE INDEX idx_suppliers_name ON suppliers (name)"]
+    },
+    {
+      "name": "stock_movements",
+      "type": "base",
+      "apiRules": {
+        "list": "",
+        "view": "",
+        "create": "",
+        "update": "",
+        "delete": ""
+      },
+      "fields": [
+        {
+          "name": "product",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "products"
+        },
+        {
+          "name": "type",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["entrada", "saida", "ajuste"]
+        },
+        {
+          "name": "quantity",
+          "type": "number",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "reason",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "supplier",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "suppliers"
+        },
+        {
+          "name": "movement_date",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_stock_movements_product ON stock_movements (product)",
+        "CREATE INDEX idx_stock_movements_type ON stock_movements (type)",
+        "CREATE INDEX idx_stock_movements_created ON stock_movements (created)"
+      ]
+    },
+    {
+      "name": "purchase_orders",
+      "type": "base",
+      "apiRules": {
+        "list": "",
+        "view": "",
+        "create": "",
+        "update": "",
+        "delete": ""
+      },
+      "fields": [
+        {
+          "name": "supplier",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "suppliers"
+        },
+        {
+          "name": "items",
+          "type": "json",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["rascunho", "enviado", "confirmado", "recebido", "cancelado"]
+        },
+        {
+          "name": "total",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "expected_date",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "received_at",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "notes",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_purchase_orders_supplier ON purchase_orders (supplier)",
+        "CREATE INDEX idx_purchase_orders_status ON purchase_orders (status)",
+        "CREATE INDEX idx_purchase_orders_created ON purchase_orders (created)"
+      ]
+    },
+    {
+      "name": "integration_settings",
+      "type": "base",
+      "apiRules": {
+        "list": "",
+        "view": "",
+        "create": "",
+        "update": "",
+        "delete": ""
+      },
+      "fields": [
+        {
+          "name": "key",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "value",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "environment",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "last_sync",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "details",
+          "type": "json",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": ["CREATE UNIQUE INDEX idx_integration_settings_key ON integration_settings (key)"]
     }
   ]
 }

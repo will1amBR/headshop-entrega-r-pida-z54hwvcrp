@@ -31,6 +31,11 @@ import AdminCRM from './pages/admin/CRM'
 import AdminMarketing from './pages/admin/Marketing'
 import AdminProducts from './pages/admin/Products'
 import AdminCategories from './pages/admin/Categories'
+import AdminFinanceiro from './pages/admin/Financeiro'
+import AdminIntegracoes from './pages/admin/Integracoes'
+import AdminEstoque from './pages/admin/Estoque'
+import AdminFornecedores from './pages/admin/Fornecedores'
+import AdminRecompras from './pages/admin/Recompras'
 
 const App = () => (
   <BrowserRouter>
@@ -65,6 +70,11 @@ const App = () => (
                 <Route path="comercial" element={<AdminCommercial />} />
                 <Route path="crm" element={<AdminCRM />} />
                 <Route path="marketing" element={<AdminMarketing />} />
+                <Route path="financeiro" element={<AdminFinanceiro />} />
+                <Route path="integracoes" element={<AdminIntegracoes />} />
+                <Route path="estoque" element={<AdminEstoque />} />
+                <Route path="fornecedores" element={<AdminFornecedores />} />
+                <Route path="recompras" element={<AdminRecompras />} />
                 <Route path="produtos" element={<AdminProducts />} />
                 <Route path="categorias" element={<AdminCategories />} />
               </Route>

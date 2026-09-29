@@ -55,6 +55,8 @@ export default function AdminProducts() {
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState<number | string>('')
   const [stock, setStock] = useState<number | string>(10)
+  const [minStock, setMinStock] = useState<number | string>(10)
+  const [costPrice, setCostPrice] = useState<number | string>('')
   const [category, setCategory] = useState('')
   const [ncm, setNcm] = useState('')
   const [featured, setFeatured] = useState(false)
@@ -89,6 +91,8 @@ export default function AdminProducts() {
     setDescription('')
     setPrice('')
     setStock(10)
+    setMinStock(10)
+    setCostPrice('')
     setCategory(categories[0]?.id || '')
     setNcm('')
     setFeatured(false)
@@ -103,6 +107,8 @@ export default function AdminProducts() {
     setDescription(p.description)
     setPrice(p.price)
     setStock(p.stock)
+    setMinStock(p.min_stock ?? 10)
+    setCostPrice(p.cost_price ?? '')
     setCategory(p.category)
     setNcm(p.ncm || '')
     setFeatured(p.featured)
@@ -122,6 +128,8 @@ export default function AdminProducts() {
     try {
       const numPrice = Number(price)
       const numStock = Number(stock) || 0
+      const numMinStock = minStock !== '' ? Number(minStock) : 10
+      const numCostPrice = costPrice !== '' ? Number(costPrice) : undefined
 
       if (editingProduct) {
         await updateProduct(editingProduct.id, {
@@ -129,6 +137,8 @@ export default function AdminProducts() {
           description: description.trim(),
           price: numPrice,
           stock: numStock,
+          min_stock: numMinStock,
+          cost_price: numCostPrice,
           category,
           ncm: ncm.trim() || undefined,
           featured,
@@ -141,6 +151,8 @@ export default function AdminProducts() {
           description: description.trim(),
           price: numPrice,
           stock: numStock,
+          min_stock: numMinStock,
+          cost_price: numCostPrice,
           category,
           ncm: ncm.trim() || undefined,
           featured,
@@ -445,12 +457,10 @@ export default function AdminProducts() {
                 </div>
               </div>
 
-              {/* Stock & Image upload */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Stock, Min Stock, Cost Price & Image upload */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-zinc-700 block">
-                    Estoque Disponível
-                  </label>
+                  <label className="text-xs font-semibold text-zinc-700 block">Estoque Atual</label>
                   <Input
                     type="number"
                     min="0"
@@ -462,19 +472,46 @@ export default function AdminProducts() {
 
                 <div className="space-y-1">
                   <label className="text-xs font-semibold text-zinc-700 block">
-                    Upload de Imagem
+                    Estoque Mínimo (Alerta)
                   </label>
                   <Input
-                    type="file"
-                    accept="image/png,image/jpeg,image/webp"
-                    onChange={(e) => {
-                      if (e.target.files && e.target.files[0]) {
-                        setImageFile(e.target.files[0])
-                      }
-                    }}
-                    className="text-xs"
+                    type="number"
+                    min="0"
+                    placeholder="10"
+                    value={minStock}
+                    onChange={(e) => setMinStock(e.target.value)}
                   />
                 </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-700 block">
+                    Preço de Custo (BRL)
+                  </label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="35.00"
+                    value={costPrice}
+                    onChange={(e) => setCostPrice(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-zinc-700 block">
+                  Upload de Imagem
+                </label>
+                <Input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      setImageFile(e.target.files[0])
+                    }
+                  }}
+                  className="text-xs"
+                />
               </div>
 
               {/* Toggles: Featured & Active */}
