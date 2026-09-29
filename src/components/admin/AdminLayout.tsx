@@ -2,7 +2,11 @@ import React, { useState } from 'react'
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard,
+  KanbanSquare,
   ShoppingBag,
+  LineChart,
+  Users,
+  Megaphone,
   Package,
   Layers,
   LogOut,
@@ -27,7 +31,11 @@ export const AdminLayout: React.FC = () => {
 
   const navItems = [
     { label: 'Dashboard', path: '/admin', icon: LayoutDashboard, exact: true },
-    { label: 'Pedidos', path: '/admin/pedidos', icon: ShoppingBag },
+    { label: 'Kanban Pedidos', path: '/admin/kanban', icon: KanbanSquare },
+    { label: 'Pedidos (Lista)', path: '/admin/pedidos', icon: ShoppingBag },
+    { label: 'Área Comercial', path: '/admin/comercial', icon: LineChart },
+    { label: 'CRM Clientes', path: '/admin/crm', icon: Users },
+    { label: 'Marketing & Campanhas', path: '/admin/marketing', icon: Megaphone },
     { label: 'Produtos', path: '/admin/produtos', icon: Package },
     { label: 'Categorias', path: '/admin/categorias', icon: Layers },
   ]

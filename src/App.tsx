@@ -23,7 +23,11 @@ import VerifyEmail from './pages/admin/VerifyEmail'
 import { ProtectedAdminRoute } from './components/admin/ProtectedAdminRoute'
 import { AdminLayout } from './components/admin/AdminLayout'
 import AdminDashboard from './pages/admin/Dashboard'
+import AdminKanban from './pages/admin/Kanban'
 import AdminOrders from './pages/admin/Orders'
+import AdminCommercial from './pages/admin/Commercial'
+import AdminCRM from './pages/admin/CRM'
+import AdminMarketing from './pages/admin/Marketing'
 import AdminProducts from './pages/admin/Products'
 import AdminCategories from './pages/admin/Categories'
 
@@ -54,7 +58,11 @@ const App = () => (
             <Route path="/admin" element={<ProtectedAdminRoute />}>
               <Route element={<AdminLayout />}>
                 <Route index element={<AdminDashboard />} />
+                <Route path="kanban" element={<AdminKanban />} />
                 <Route path="pedidos" element={<AdminOrders />} />
+                <Route path="comercial" element={<AdminCommercial />} />
+                <Route path="crm" element={<AdminCRM />} />
+                <Route path="marketing" element={<AdminMarketing />} />
                 <Route path="produtos" element={<AdminProducts />} />
                 <Route path="categorias" element={<AdminCategories />} />
               </Route>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Search, Filter, MessageCircle, Eye, RefreshCw, X } from 'lucide-react'
 import { Order, OrderStatus } from '@/types/ecommerce'
 import { getOrders, updateOrderStatus } from '@/services/orders'
@@ -113,20 +113,32 @@ export default function AdminOrders() {
             Atendimento & Logística
           </span>
           <h1 className="font-display font-bold text-2xl sm:text-3xl text-zinc-950">
-            Gestão de Pedidos
+            Gestão de Pedidos (Lista)
           </h1>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={loadData}
-          className="border-zinc-300 gap-1.5 text-xs self-start sm:self-auto"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-          Atualizar Lista
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="border-zinc-300 hover:border-black text-xs gap-1.5"
+          >
+            <Link to="/admin/kanban">
+              <span>Quadro Kanban</span>
+              <span className="text-[10px] bg-zinc-100 px-1.5 py-0.5 rounded font-mono">D&D</span>
+            </Link>
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={loadData}
+            className="border-zinc-300 gap-1.5 text-xs self-start sm:self-auto"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+            Atualizar Lista
+          </Button>
+        </div>
       </div>
-
       {/* Filter toolbar */}
       <div className="bg-white border border-zinc-200 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
         <div className="relative w-full sm:w-80">

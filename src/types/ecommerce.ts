@@ -65,6 +65,40 @@ export interface SeoSettings {
   updated: string
 }
 
+export type CampaignStatus = 'rascunho' | 'ativa' | 'concluida' | 'pausada'
+
+export interface Campaign {
+  id: string
+  name: string
+  type?: string
+  description?: string
+  target_audience?: string
+  status: CampaignStatus
+  start_date?: string
+  end_date?: string
+  discount_code?: string
+  message_template?: string
+  clicks_count?: number
+  created: string
+  updated: string
+}
+
+export interface CustomerProfile {
+  id: string
+  name: string
+  phone: string
+  email?: string
+  city: string
+  state: string
+  region: string
+  ordersCount: number
+  totalSpent: number
+  averageTicket: number
+  lastOrderDate: string
+  firstOrderDate: string
+  orders: Order[]
+}
+
 export type BrazilRegion = 'Norte' | 'Nordeste' | 'Centro-Oeste' | 'Sudeste' | 'Sul'
 
 export const REGION_SHIPPING_RATES: Record<BrazilRegion, number> = {
