@@ -12,16 +12,24 @@ routerAdd('POST', '/backend/v1/agent/chat', (e) => {
       try {
         const serviceUser = $app.findAuthRecordByEmail(
           '_pb_users_auth_',
-          'vendedor-will@headshop.local',
+          'vendedor-ali@headshop.local',
         )
         userId = serviceUser.id
       } catch (_) {
-        // Fallback para admin caso o usuário de serviço não seja localizado
-        const fallbackUser = $app.findAuthRecordByEmail(
-          '_pb_users_auth_',
-          'william@korenambiental.com',
-        )
-        userId = fallbackUser.id
+        try {
+          const legacyUser = $app.findAuthRecordByEmail(
+            '_pb_users_auth_',
+            'vendedor-will@headshop.local',
+          )
+          userId = legacyUser.id
+        } catch (_) {
+          // Fallback para admin caso o usuário de serviço não seja localizado
+          const fallbackUser = $app.findAuthRecordByEmail(
+            '_pb_users_auth_',
+            'william@korenambiental.com',
+          )
+          userId = fallbackUser.id
+        }
       }
     }
 

@@ -169,7 +169,7 @@ export default function ProductDetailPage() {
 
   const handleAddToCart = () => {
     if (isOutOfStock) return
-    addItem(product, quantity)
+    addItem(product, quantity, true)
     setJustAdded(true)
     setTimeout(() => {
       setJustAdded(false)
@@ -414,7 +414,7 @@ export default function ProductDetailPage() {
                     disabled={isOutOfStock}
                     onClick={() => {
                       if (isOutOfStock) return
-                      addItem(product, quantity)
+                      addItem(product, quantity, false)
                       navigate('/checkout')
                     }}
                     className="font-bold text-sm sm:text-base h-12 bg-[#0A0A0A] hover:bg-zinc-800 text-white shadow-md gap-2"

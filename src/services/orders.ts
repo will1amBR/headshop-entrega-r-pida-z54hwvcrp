@@ -13,11 +13,14 @@ export async function createOrder(data: {
   items: Array<{ name: string; quantity: number; unit_price: number }>
   subtotal: number
   shipping: number
+  discount?: number
+  inactivity_discount?: number
   total: number
   status?: OrderStatus
 }): Promise<Order> {
+  const { discount: _discount, inactivity_discount: _inactivity, ...rest } = data
   const payload = {
-    ...data,
+    ...rest,
     status: data.status || 'novo',
   }
   return await pb.collection('orders').create<Order>(payload)

@@ -6,6 +6,7 @@ interface WhatsAppMessageParams {
   subtotal: number
   shipping: number
   discount?: number
+  inactivityDiscount?: number
   region: string
   total: number
   customerName: string
@@ -17,26 +18,7 @@ interface WhatsAppMessageParams {
 }
 
 /**
- * Builds the exact required WhatsApp order payload:
- *
- * *NOVO PEDIDO — HeadShop Entrega Rápida*
- *
- * *Itens:*
- * 1x Produto — R$ XX,XX
- * ...
- *
- * *Subtotal:* R$ XX,XX
- * *Frete (Região):* R$ XX,XX (ou Grátis)
- * *Total: R$ XX,XX*
- *
- * *Dados de entrega:*
- * Nome: ...
- * WhatsApp: ...
- * Endereço: ...
- * Cidade/UF: ...
- * CEP: ...
- *
- * *Pagamento:* combinado via WhatsApp.
+ * Builds the exact required WhatsApp order payload
  */
 export function buildWhatsAppOrderMessage(params: WhatsAppMessageParams): string {
   const itemsText = params.items
@@ -54,6 +36,9 @@ export function buildWhatsAppOrderMessage(params: WhatsAppMessageParams): string
     `*Subtotal:* ${formatBRL(params.subtotal)}`,
     params.discount && params.discount > 0
       ? `*Desconto Kit Completo (5% OFF):* -${formatBRL(params.discount)}`
+      : null,
+    params.inactivityDiscount && params.inactivityDiscount > 0
+      ? `*Desconto especial 2%: −${formatBRL(params.inactivityDiscount)}*`
       : null,
     `*Frete (${params.region}):* ${shippingFormatted}`,
     `*Total: ${formatBRL(params.total)}*`,

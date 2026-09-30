@@ -15,6 +15,7 @@ import { getSeoSettings } from '@/services/seo'
 import { buildWhatsAppUrl } from '@/lib/whatsapp'
 import { formatBRL } from '@/lib/formatters'
 import { Button } from '@/components/ui/button'
+import { useCart } from '@/context/CartContext'
 
 interface ChatMessage {
   id: string
@@ -51,6 +52,7 @@ function extractCheckoutBlock(text: string): {
 }
 
 export const FloatingWhatsAppButton: React.FC = () => {
+  const { addItem } = useCart()
   const [phone, setPhone] = useState('5548992463428')
   const [storeName, setStoreName] = useState('HeadShop Entrega Rápida')
   const [isOpen, setIsOpen] = useState(false)
@@ -356,14 +358,43 @@ export const FloatingWhatsAppButton: React.FC = () => {
                           )}
                         </div>
 
-                        <button
-                          onClick={() => handleCheckoutHandoff(msg.checkoutData!)}
-                          className="w-full flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1EBE5A] text-white py-2.5 px-3 rounded-lg font-semibold text-xs shadow-md transition-all active:scale-98"
-                        >
-                          <MessageCircle className="w-4 h-4 fill-current" />
-                          Finalizar Pedido no WhatsApp
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </button>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              // Adiciona os itens ao carrinho e abre o popup de confirmação
+                              const first = msg.checkoutData!.items[0]
+                              addItem(
+                                {
+                                  id: `chat-item-${Date.now()}`,
+                                  name: first?.name || 'Combo sugerido pelo Ali',
+                                  price: first?.price || msg.checkoutData!.subtotal || 25,
+                                  stock: 50,
+                                  category: 'acessorios',
+                                  featured: false,
+                                  active: true,
+                                  description: 'Item adicionado via consultoria no chat do Ali',
+                                  created: '',
+                                  updated: '',
+                                },
+                                first?.quantity || 1,
+                                true,
+                              )
+                            }}
+                            className="w-full flex items-center justify-center gap-1.5 bg-zinc-900 hover:bg-black text-white py-2 px-2.5 rounded-lg font-semibold text-xs shadow-xs transition-all"
+                          >
+                            <ShoppingBag className="w-3.5 h-3.5 text-[#25D366]" />
+                            Colocar no Carrinho
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleCheckoutHandoff(msg.checkoutData!)}
+                            className="w-full flex items-center justify-center gap-1.5 bg-[#25D366] hover:bg-[#1EBE5A] text-white py-2 px-2.5 rounded-lg font-semibold text-xs shadow-xs transition-all"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5 fill-current" />
+                            Finalizar no Whats
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>

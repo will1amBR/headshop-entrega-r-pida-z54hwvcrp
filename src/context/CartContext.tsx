@@ -1,4 +1,12 @@
-import React, { createContext, useContext, useEffect, useState, useMemo } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+  useRef,
+  useCallback,
+} from 'react'
 import {
   BrazilRegion,
   FREE_SHIPPING_THRESHOLD,
@@ -6,7 +14,7 @@ import {
   Product,
   REGION_SHIPPING_RATES,
 } from '@/types/ecommerce'
-import { toast } from '@/hooks/use-toast'
+import { AddedToCartModal } from '@/components/AddedToCartModal'
 
 export interface CartItem extends OrderItem {
   productId: string
@@ -24,13 +32,21 @@ export interface KitDiscountInfo {
   tabacoFound: boolean
 }
 
+export interface InactivityDiscountInfo {
+  isActive: boolean
+  discountPercent: number // 2
+  discountAmount: number
+  expiresAt: number | null
+  remainingSeconds: number
+}
+
 interface CartContextType {
   items: CartItem[]
   selectedRegion: BrazilRegion | null
   cep: string
   setSelectedRegion: (region: BrazilRegion | null) => void
   setCep: (cep: string) => void
-  addItem: (product: Product, quantity?: number) => void
+  addItem: (product: Product, quantity?: number, showModal?: boolean) => void
   removeItem: (productId: string) => void
   updateQuantity: (productId: string, quantity: number) => void
   clearCart: () => void
@@ -38,10 +54,14 @@ interface CartContextType {
   subtotal: number
   shipping: number
   kitDiscount: KitDiscountInfo
+  inactivityDiscount: InactivityDiscountInfo
   total: number
   isFreeShippingEligible: boolean
   freeShippingThreshold: number
   remainingForFreeShipping: number
+  openAddToCartModal: (product: Product, quantity?: number) => void
+  isOfferModalOpen: boolean
+  dismissInactivityOffer: () => void
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
@@ -49,6 +69,10 @@ const CartContext = createContext<CartContextType | undefined>(undefined)
 const CART_STORAGE_KEY = 'headshop_cart_items_v1'
 const REGION_STORAGE_KEY = 'headshop_cart_region_v1'
 const CEP_STORAGE_KEY = 'headshop_cart_cep_v1'
+const INACTIVITY_STORAGE_KEY = 'headshop_inactivity_discount_v1'
+
+const INACTIVITY_TRIGGER_MS = 3 * 60 * 1000 // 3 minutos
+const DISCOUNT_DURATION_MS = 5 * 60 * 1000 // 5 minutos (300s)
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>(() => {
@@ -77,6 +101,48 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   })
 
+  // Modal de confirmação pós adição ao carrinho
+  const [addedModalState, setAddedModalState] = useState<{
+    isOpen: boolean
+    product: Product | null
+    quantity: number
+  }>({
+    isOpen: false,
+    product: null,
+    quantity: 1,
+  })
+
+  // Estado do desconto de inatividade (persistente por sessão)
+  const [inactivityState, setInactivityState] = useState<{
+    triggered: boolean
+    expiresAt: number | null
+  }>(() => {
+    try {
+      const saved = sessionStorage.getItem(INACTIVITY_STORAGE_KEY)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (parsed.expiresAt && Date.now() < parsed.expiresAt) {
+          return parsed
+        }
+        return { triggered: true, expiresAt: null }
+      }
+    } catch (_) {
+      /* ignore */
+    }
+    return { triggered: false, expiresAt: null }
+  })
+
+  const [remainingSeconds, setRemainingSeconds] = useState<number>(() => {
+    if (inactivityState.expiresAt) {
+      return Math.max(0, Math.floor((inactivityState.expiresAt - Date.now()) / 1000))
+    }
+    return 0
+  })
+
+  const [isOfferModalOpen, setIsOfferModalOpen] = useState(false)
+  const lastActivityRef = useRef<number>(Date.now())
+
+  // Sincronizar items, região e CEP
   useEffect(() => {
     try {
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items))
@@ -105,7 +171,82 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [cep])
 
-  const addItem = (product: Product, quantity: number = 1) => {
+  // Timer regressivo de 5 minutos do desconto ativo
+  useEffect(() => {
+    if (!inactivityState.expiresAt) return
+
+    const updateTimer = () => {
+      const remaining = Math.max(0, Math.floor((inactivityState.expiresAt! - Date.now()) / 1000))
+      setRemainingSeconds(remaining)
+      if (remaining <= 0) {
+        setInactivityState((prev) => ({ ...prev, expiresAt: null }))
+        try {
+          sessionStorage.setItem(
+            INACTIVITY_STORAGE_KEY,
+            JSON.stringify({ triggered: true, expiresAt: null }),
+          )
+        } catch (_) {
+          /* ignore */
+        }
+      }
+    }
+
+    updateTimer()
+    const interval = setInterval(updateTimer, 1000)
+    return () => clearInterval(interval)
+  }, [inactivityState.expiresAt])
+
+  // Detecção de inatividade de 3 minutos (dispara apenas 1 vez por sessão)
+  const triggerInactivityDiscount = useCallback(() => {
+    if (inactivityState.triggered) return
+
+    const expiresAt = Date.now() + DISCOUNT_DURATION_MS
+    const newState = { triggered: true, expiresAt }
+    setInactivityState(newState)
+    setRemainingSeconds(Math.floor(DISCOUNT_DURATION_MS / 1000))
+    setIsOfferModalOpen(true)
+
+    try {
+      sessionStorage.setItem(INACTIVITY_STORAGE_KEY, JSON.stringify(newState))
+    } catch (_) {
+      /* ignore */
+    }
+  }, [inactivityState.triggered])
+
+  useEffect(() => {
+    if (inactivityState.triggered) return
+
+    const handleUserActivity = () => {
+      lastActivityRef.current = Date.now()
+    }
+
+    const activityEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll']
+    activityEvents.forEach((evt) =>
+      window.addEventListener(evt, handleUserActivity, { passive: true }),
+    )
+
+    const checkInterval = setInterval(() => {
+      const idleTime = Date.now() - lastActivityRef.current
+      if (idleTime >= INACTIVITY_TRIGGER_MS) {
+        triggerInactivityDiscount()
+      }
+    }, 10000) // checa a cada 10s
+
+    return () => {
+      activityEvents.forEach((evt) => window.removeEventListener(evt, handleUserActivity))
+      clearInterval(checkInterval)
+    }
+  }, [inactivityState.triggered, triggerInactivityDiscount])
+
+  const openAddToCartModal = useCallback((product: Product, quantity: number = 1) => {
+    setAddedModalState({
+      isOpen: true,
+      product,
+      quantity,
+    })
+  }, [])
+
+  const addItem = (product: Product, quantity: number = 1, showModal: boolean = true) => {
     setItems((prevItems) => {
       const existingIndex = prevItems.findIndex((item) => item.productId === product.id)
       const stock = product.stock > 0 ? product.stock : 99
@@ -133,11 +274,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     })
 
-    toast({
-      title: '✓ Adicionado ao carrinho',
-      description: `${product.name} foi adicionado com sucesso.`,
-      duration: 2500,
-    })
+    if (showModal) {
+      openAddToCartModal(product, quantity)
+    }
   }
 
   const removeItem = (productId: string) => {
@@ -231,10 +370,31 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [items])
 
+  // Desconto de inatividade: 2% sobre o subtotal se ativo
+  const inactivityDiscount = useMemo<InactivityDiscountInfo>(() => {
+    const isStillActive = Boolean(
+      inactivityState.expiresAt && Date.now() < inactivityState.expiresAt && subtotal > 0,
+    )
+    const discountAmount = isStillActive ? Number((subtotal * 0.02).toFixed(2)) : 0
+
+    return {
+      isActive: isStillActive,
+      discountPercent: 2,
+      discountAmount,
+      expiresAt: inactivityState.expiresAt,
+      remainingSeconds: isStillActive ? remainingSeconds : 0,
+    }
+  }, [inactivityState.expiresAt, remainingSeconds, subtotal])
+
   const total = useMemo(() => {
-    const rawTotal = subtotal + shipping - kitDiscount.discountAmount
+    const rawTotal =
+      subtotal + shipping - kitDiscount.discountAmount - inactivityDiscount.discountAmount
     return Number(Math.max(0, rawTotal).toFixed(2))
-  }, [subtotal, shipping, kitDiscount.discountAmount])
+  }, [subtotal, shipping, kitDiscount.discountAmount, inactivityDiscount.discountAmount])
+
+  const dismissInactivityOffer = () => {
+    setIsOfferModalOpen(false)
+  }
 
   return (
     <CartContext.Provider
@@ -252,13 +412,25 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         subtotal,
         shipping,
         kitDiscount,
+        inactivityDiscount,
         total,
         isFreeShippingEligible,
         freeShippingThreshold: FREE_SHIPPING_THRESHOLD,
         remainingForFreeShipping,
+        openAddToCartModal,
+        isOfferModalOpen,
+        dismissInactivityOffer,
       }}
     >
       {children}
+
+      {/* Modal global de confirmação pós adição ao carrinho */}
+      <AddedToCartModal
+        isOpen={addedModalState.isOpen}
+        onClose={() => setAddedModalState((prev) => ({ ...prev, isOpen: false }))}
+        product={addedModalState.product}
+        quantity={addedModalState.quantity}
+      />
     </CartContext.Provider>
   )
 }

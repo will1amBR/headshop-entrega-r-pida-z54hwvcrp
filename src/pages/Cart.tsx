@@ -26,6 +26,7 @@ export default function CartPage() {
     subtotal,
     shipping,
     kitDiscount,
+    inactivityDiscount,
     total,
     selectedRegion,
     isFreeShippingEligible,
@@ -218,6 +219,23 @@ export default function CartPage() {
                     </div>
                     <span className="font-mono font-bold text-sm">
                       -{formatBRL(kitDiscount.discountAmount)}
+                    </span>
+                  </div>
+                )}
+
+                {inactivityDiscount.isActive && inactivityDiscount.discountAmount > 0 && (
+                  <div className="flex justify-between text-amber-800 bg-amber-50 px-3 py-2 rounded-lg border border-amber-200">
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-xs sm:text-sm">
+                        Desconto especial 2%:
+                      </span>
+                      <span className="text-[10px] text-amber-700 font-mono">
+                        Expira em {Math.floor(inactivityDiscount.remainingSeconds / 60)}:
+                        {String(inactivityDiscount.remainingSeconds % 60).padStart(2, '0')}
+                      </span>
+                    </div>
+                    <span className="font-mono font-bold text-sm">
+                      −{formatBRL(inactivityDiscount.discountAmount)}
                     </span>
                   </div>
                 )}

@@ -36,7 +36,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       {/* Badges */}
       <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5">
         {product.featured && (
-          <Badge className="bg-[#0A0A0A] text-white hover:bg-[#0A0A0A] font-semibold text-[11px] px-2.5 py-0.5 rounded uppercase tracking-wider shadow-sm">
+          <Badge className="bg-[#0A0A0A] text-white hover:bg-[#0A0A0A] font-semibold text-[10px] sm:text-[11px] px-2 py-0.5 rounded uppercase tracking-wider shadow-sm">
             Mais Vendido
           </Badge>
         )}
@@ -89,38 +89,39 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
 
         {/* Price & Action */}
-        <div className="pt-4 mt-3 border-t border-zinc-100 flex items-center justify-between gap-3">
-          <div className="flex flex-col">
-            <span className="text-[10px] text-zinc-400 font-mono uppercase">Preço</span>
+        <div className="pt-3 mt-3 border-t border-zinc-100 flex flex-col gap-2.5">
+          <div className="flex items-baseline justify-between">
+            <span className="text-[10px] text-zinc-400 font-mono uppercase tracking-wider">
+              Preço
+            </span>
             <span className="font-mono font-bold text-lg text-zinc-950">
               {formatBRL(product.price)}
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          {/* Botões empilhados em cards estreitos ou lado a lado em 2 colunas com truncamento seguro */}
+          <div className="grid grid-cols-2 gap-1.5 w-full">
             <Button
               size="sm"
               variant="outline"
               disabled={isOutOfStock}
               onClick={handleBuy}
               title="Adicionar ao carrinho"
-              className={`h-9 px-2.5 sm:px-3 text-xs transition-all duration-150 border-zinc-200 hover:border-black ${
+              className={`h-9 px-1.5 text-xs transition-all duration-150 border-zinc-200 hover:border-black w-full flex items-center justify-center min-w-0 ${
                 justAdded
                   ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
                   : 'bg-white text-zinc-800'
               }`}
             >
               {justAdded ? (
-                <>
-                  <Check className="w-3.5 h-3.5 mr-1 text-emerald-600" />
-                  <span className="text-[11px] font-semibold">Adicionado</span>
-                </>
+                <span className="inline-flex items-center text-[11px] font-semibold truncate">
+                  <Check className="w-3.5 h-3.5 mr-1 text-emerald-600 shrink-0" />
+                  Adicionado
+                </span>
               ) : (
-                <>
-                  <ShoppingCart className="w-3.5 h-3.5 mr-1" />
-                  <span className="hidden sm:inline text-[11px] font-medium">+ Carrinho</span>
-                  <span className="sm:hidden text-[11px] font-medium">+</span>
-                </>
+                <span className="inline-flex items-center text-[11px] font-medium truncate">
+                  <ShoppingCart className="w-3.5 h-3.5 mr-1 shrink-0" />+ Carrinho
+                </span>
               )}
             </Button>
             <Button
@@ -129,13 +130,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
-                addItem(product, 1)
+                addItem(product, 1, false)
                 window.location.href = '/checkout'
               }}
-              className="bg-[#0A0A0A] hover:bg-zinc-800 text-white font-semibold text-xs h-9 px-2.5 sm:px-3 shadow-xs"
+              className="bg-[#0A0A0A] hover:bg-zinc-800 text-white font-semibold text-xs h-9 px-1.5 shadow-xs w-full flex items-center justify-center min-w-0"
               title="Comprar direto sem passar pelo carrinho"
             >
-              Comprar Já
+              <span className="text-[11px] font-semibold truncate">Comprar</span>
             </Button>
           </div>
         </div>

@@ -80,6 +80,7 @@ export default function CheckoutPage() {
     subtotal,
     shipping,
     kitDiscount,
+    inactivityDiscount,
     total,
     selectedRegion,
     setSelectedRegion,
@@ -371,6 +372,7 @@ export default function CheckoutPage() {
         subtotal,
         shipping,
         discount: kitDiscount?.discountAmount || 0,
+        inactivity_discount: inactivityDiscount?.discountAmount || 0,
         total,
         status: 'novo',
       })
@@ -405,6 +407,7 @@ export default function CheckoutPage() {
         subtotal,
         shipping,
         discount: kitDiscount?.discountAmount || 0,
+        inactivityDiscount: inactivityDiscount?.discountAmount || 0,
         region: selectedRegion || 'Sudeste',
         total,
         customerName: formData.fullName.trim(),
@@ -1224,6 +1227,20 @@ export default function CheckoutPage() {
                     <span className="font-medium">Kit Completo (5% OFF):</span>
                     <span className="font-mono font-bold">
                       -{formatBRL(kitDiscount.discountAmount)}
+                    </span>
+                  </div>
+                )}
+                {inactivityDiscount?.isActive && inactivityDiscount.discountAmount > 0 && (
+                  <div className="flex justify-between text-amber-700 bg-amber-50 px-2.5 py-1.5 rounded border border-amber-200 text-xs">
+                    <div className="flex flex-col">
+                      <span className="font-medium">Desconto especial 2%:</span>
+                      <span className="text-[10px] text-amber-800 font-mono">
+                        Expira em {Math.floor(inactivityDiscount.remainingSeconds / 60)}:
+                        {String(inactivityDiscount.remainingSeconds % 60).padStart(2, '0')}
+                      </span>
+                    </div>
+                    <span className="font-mono font-bold">
+                      −{formatBRL(inactivityDiscount.discountAmount)}
                     </span>
                   </div>
                 )}

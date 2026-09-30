@@ -7,10 +7,13 @@ import { AnnouncementBar } from './AnnouncementBar'
 import { Navbar } from './Navbar'
 import { Footer } from './Footer'
 import { FloatingWhatsAppButton } from './FloatingWhatsAppButton'
+import { InactivityDiscountModal } from './InactivityDiscountModal'
+import { InactivityBanner } from './InactivityBanner'
 
 export default function Layout() {
   return (
     <div className="flex flex-col min-h-screen bg-white text-zinc-900 selection:bg-black selection:text-white">
+      <InactivityBanner />
       <AnnouncementBar />
       <Navbar />
       <main className="flex-1 flex flex-col">
@@ -18,6 +21,7 @@ export default function Layout() {
       </main>
       <Footer />
       <FloatingWhatsAppButton />
+      <InactivityDiscountModal />
     </div>
   )
 }

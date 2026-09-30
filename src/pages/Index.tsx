@@ -169,7 +169,7 @@ export default function IndexPage() {
               </div>
               <div>
                 <span className="block font-bold text-white text-xs sm:text-sm">Assistente</span>
-                Will no Chat
+                Ali no Chat
               </div>
             </div>
           </div>
@@ -332,7 +332,7 @@ export default function IndexPage() {
         </div>
       </section>
 
-      {/* 4. Banner Consultor Will / Vendedor IA */}
+      {/* 4. Banner Consultor Ali / Vendedor IA */}
       <section className="py-8 bg-zinc-950 text-white border-b border-zinc-800">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
           <div className="rounded-2xl bg-zinc-900 border border-zinc-800 p-5 sm:p-7 flex flex-col md:flex-row items-center justify-between gap-5">
@@ -345,7 +345,7 @@ export default function IndexPage() {
                   Atendimento Inteligente 24h
                 </span>
                 <h3 className="font-display font-bold text-lg sm:text-xl text-white">
-                  Dúvida sobre o que comprar? Fale com o Will!
+                  Dúvida sobre o que comprar? Fale com o Ali!
                 </h3>
                 <p className="text-xs sm:text-sm text-zinc-400">
                   Nosso consultor nativo te indica o modelo ideal, combina acessórios e monta seu
@@ -363,7 +363,7 @@ export default function IndexPage() {
               }}
               className="bg-white hover:bg-zinc-200 text-black font-semibold text-xs sm:text-sm h-10 px-5 shrink-0 whitespace-nowrap shadow"
             >
-              Iniciar Chat com Will
+              Iniciar Chat com Ali
             </Button>
           </div>
         </div>
