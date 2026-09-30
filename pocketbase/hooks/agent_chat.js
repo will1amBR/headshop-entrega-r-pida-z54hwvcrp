@@ -26,7 +26,18 @@ routerAdd('POST', '/backend/v1/agent/chat', (e) => {
     }
 
     const conversationId = body.conversation_id || null
-    const result = $ai.agent('will-vendedor').chat({
+    let agentHandle
+    try {
+      agentHandle = $ai.agent('ali-sales-specialist')
+    } catch (_) {
+      try {
+        agentHandle = $ai.agent('will-vendedor')
+      } catch (e) {
+        throw e
+      }
+    }
+
+    const result = agentHandle.chat({
       user_id: userId,
       conversation_id: conversationId,
       message: message,

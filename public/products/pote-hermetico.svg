@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#242426" />
+      <stop offset="100%" stop-color="#121214" />
+    </radialGradient>
+    <linearGradient id="amberJar" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#451a03" />
+      <stop offset="50%" stop-color="#78350f" />
+      <stop offset="100%" stop-color="#271003" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="20" stdDeviation="18" flood-color="#000" flood-opacity="0.6" />
+    </filter>
+  </defs>
+  <rect width="600" height="600" fill="url(#bg)" />
+  <circle cx="300" cy="300" r="230" fill="#d97706" opacity="0.08" />
+  
+  <g transform="translate(170, 140)" filter="url(#shadow)">
+    <!-- Metal Clamp Latch Ring -->
+    <rect x="35" y="45" width="190" height="26" rx="6" fill="#cbd5e1" stroke="#475569" stroke-width="2" />
+    <!-- Orange Rubber Seal Ring -->
+    <rect x="42" y="66" width="176" height="12" rx="3" fill="#ea580c" />
+    <!-- Glass Lid -->
+    <rect x="48" y="15" width="164" height="34" rx="10" fill="url(#amberJar)" stroke="#92400e" stroke-width="2" />
+    
+    <!-- Main Amber Glass Body -->
+    <rect x="40" y="76" width="180" height="230" rx="20" fill="url(#amberJar)" stroke="#92400e" stroke-width="2.5" />
+    <!-- Inner UV protect reflection -->
+    <path d="M 55 90 L 55 285" stroke="#fef3c7" stroke-width="4" stroke-linecap="round" opacity="0.4" />
+    
+    <!-- Metal latch hook mechanism -->
+    <path d="M 225 55 L 240 55 L 240 100 L 222 100" fill="none" stroke="#94a3b8" stroke-width="3" />
+    <circle cx="240" cy="80" r="5" fill="#64748b" />
+    
+    <!-- UV Shield Seal Stamp on Jar -->
+    <rect x="75" y="140" width="110" height="100" rx="8" fill="#18181b" stroke="#ca8a04" stroke-width="1.5" />
+    <text x="130" y="175" fill="#fef08a" font-family="'Impact', 'Arial Black', sans-serif" font-size="24" font-weight="900" text-anchor="middle">UV GLASS</text>
+    <text x="130" y="200" fill="#ffffff" font-family="system-ui, sans-serif" font-size="9" font-weight="800" text-anchor="middle" letter-spacing="1">CURA HERMÉTICA</text>
+    <text x="130" y="220" fill="#a1a1aa" font-family="system-ui, sans-serif" font-size="8" font-weight="700" text-anchor="middle">ANTI-ODOR 100%</text>
+  </g>
+  <text x="300" y="520" fill="#a1a1aa" font-family="system-ui, sans-serif" font-size="13" font-weight="600" text-anchor="middle" letter-spacing="2">POTE HERMÉTICO VIDRO COM TRAVA E VEDAÇÃO</text>
+</svg>

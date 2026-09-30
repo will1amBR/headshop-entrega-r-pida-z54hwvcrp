@@ -74,11 +74,11 @@ export const FloatingWhatsAppButton: React.FC = () => {
     })
   }, [])
 
-  // Inicializa com saudação simpática do Will
+  // Inicializa com saudação simpática do Ali
   useEffect(() => {
     if (messages.length === 0) {
       const welcomeText =
-        'E aí! Sou o Will, atendente e consultor da HeadShop Entrega Rápida aqui em SP 🚀\n\nPosso te ajudar a escolher o vaporizador ideal, sedas, dichavadores ou tirar dúvidas sobre entrega rápida. O que você procura hoje?'
+        'Salve! Sou o Ali, consultor comercial e vendedor da HeadShop Entrega Rápida 🚀\n\nConheço todo o catálogo: sedas RAW e Smoking, piteiras de vidro, dichavadores CNC, bongs, maçaricos e kits com desconto! O que você procura hoje?'
       setMessages([
         {
           id: 'welcome-1',
@@ -144,7 +144,7 @@ export const FloatingWhatsAppButton: React.FC = () => {
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}))
-        throw new Error(errorData.error || 'Falha ao conversar com o Will')
+        throw new Error(errorData.error || 'Falha ao conversar com o Ali')
       }
 
       const data = await res.json()
@@ -167,7 +167,7 @@ export const FloatingWhatsAppButton: React.FC = () => {
         setHasUnread(true)
       }
     } catch (err: unknown) {
-      console.error('Erro no chat com Will:', err)
+      console.error('Erro no chat com Ali:', err)
       const errorMsg: ChatMessage = {
         id: `err-${Date.now()}`,
         role: 'assistant',
@@ -195,14 +195,14 @@ export const FloatingWhatsAppButton: React.FC = () => {
       : ''
 
     const message = [
-      `*PEDIDO VIA ASSISTENTE WILL — ${storeName.toUpperCase()}*`,
+      `*PEDIDO VIA ASSISTENTE ALI — ${storeName.toUpperCase()}*`,
       ``,
       `*Itens selecionados no chat:*`,
       itemsLines,
       subtotalLine,
       ``,
       `*Tipo:* Atendimento consultivo / Finalização rápida`,
-      `Olá, montei esse pedido com o Will no chat do site e quero finalizar com entrega rápida!`,
+      `Olá Ali, montei esse pedido no chat do site e quero finalizar com entrega rápida!`,
     ].join('\n')
 
     window.open(buildWhatsAppUrl(phone, message), '_blank', 'noopener,noreferrer')
@@ -219,7 +219,7 @@ export const FloatingWhatsAppButton: React.FC = () => {
             className="hidden sm:flex items-center gap-2 bg-[#0A0A0A] text-white border border-zinc-800 text-xs font-medium py-2 px-3 rounded-full shadow-2xl hover:bg-zinc-900 transition-all cursor-pointer group"
           >
             <span className="w-2 h-2 rounded-full bg-[#25D366] animate-pulse" />
-            <span>Falar com o Will (Vendedor IA)</span>
+            <span>Falar com o Ali (Vendedor)</span>
           </button>
         )}
 
@@ -233,7 +233,7 @@ export const FloatingWhatsAppButton: React.FC = () => {
 
           <button
             onClick={() => setIsOpen(!isOpen)}
-            aria-label={isOpen ? 'Fechar chat' : 'Abrir chat com atendente Will'}
+            aria-label={isOpen ? 'Fechar chat' : 'Abrir chat com atendente Ali'}
             className={`flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 ${
               isOpen
                 ? 'bg-zinc-900 text-white rotate-90 border border-zinc-700'
@@ -253,7 +253,7 @@ export const FloatingWhatsAppButton: React.FC = () => {
       {isOpen && (
         <div
           role="dialog"
-          aria-label="Atendimento com Will - Consultor da HeadShop"
+          aria-label="Atendimento com Ali - Consultor da HeadShop"
           className="fixed inset-x-2 bottom-20 top-auto sm:inset-auto sm:bottom-24 sm:right-6 z-50 w-auto sm:w-[420px] max-w-[calc(100vw-1rem)] h-[580px] max-h-[82vh] bg-white rounded-2xl shadow-2xl border border-zinc-200 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200"
         >
           {/* Header do Chat */}
@@ -267,13 +267,13 @@ export const FloatingWhatsAppButton: React.FC = () => {
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <h3 className="font-display font-bold text-sm text-white">Will — Vendedor</h3>
+                  <h3 className="font-display font-bold text-sm text-white">Ali — Vendedor</h3>
                   <span className="text-[10px] bg-zinc-800 border border-zinc-700 text-zinc-300 font-mono px-1.5 py-0.2 rounded uppercase">
-                    IA HeadShop
+                    Especialista
                   </span>
                 </div>
                 <p className="text-xs text-zinc-400 font-sans flex items-center gap-1">
-                  <span>Entrega rápida em SP • Atendimento 24h</span>
+                  <span>Entrega rápida • Atendimento prioritário</span>
                 </p>
               </div>
             </div>
@@ -385,7 +385,7 @@ export const FloatingWhatsAppButton: React.FC = () => {
                   <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce [animation-delay:-0.15s]" />
                   <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-bounce" />
                   <span className="ml-1 text-[11px] text-zinc-400">
-                    Will consultando o catálogo...
+                    Ali consultando o catálogo...
                   </span>
                 </div>
               </div>
@@ -430,7 +430,7 @@ export const FloatingWhatsAppButton: React.FC = () => {
               <input
                 ref={inputRef}
                 type="text"
-                placeholder="Fale com o Will sobre produtos..."
+                placeholder="Fale com o Ali sobre produtos..."
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 disabled={isLoading}

@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#242426" />
+      <stop offset="100%" stop-color="#121214" />
+    </radialGradient>
+    <linearGradient id="bongGlass" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8" />
+      <stop offset="25%" stop-color="#38bdf8" stop-opacity="0.3" />
+      <stop offset="50%" stop-color="#bae6fd" stop-opacity="0.4" />
+      <stop offset="75%" stop-color="#0284c7" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.9" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="20" stdDeviation="18" flood-color="#000" flood-opacity="0.6" />
+    </filter>
+  </defs>
+  <rect width="600" height="600" fill="url(#bg)" />
+  <circle cx="300" cy="300" r="230" fill="#38bdf8" opacity="0.08" />
+  
+  <g transform="translate(180, 80)" filter="url(#shadow)">
+    <!-- Bong Neck Tube -->
+    <rect x="95" y="40" width="50" height="230" rx="6" fill="url(#bongGlass)" stroke="#38bdf8" stroke-width="2.5" />
+    <!-- Mouthpiece lip ring -->
+    <ellipse cx="120" cy="40" rx="32" ry="10" fill="#e0f2fe" stroke="#38bdf8" stroke-width="3" />
+    <ellipse cx="120" cy="40" rx="20" ry="6" fill="#0284c7" opacity="0.3" />
+    
+    <!-- Ice pinches / travas de gelo -->
+    <polygon points="95,150 110,155 95,160" fill="#38bdf8" />
+    <polygon points="145,150 130,155 145,160" fill="#38bdf8" />
+    
+    <!-- Beaker Wide Base -->
+    <path d="M 95 250 L 30 380 C 15 410 50 430 120 430 C 190 430 225 410 210 380 L 145 250 Z" fill="url(#bongGlass)" stroke="#38bdf8" stroke-width="2.5" />
+    
+    <!-- Water level indicator -->
+    <ellipse cx="120" cy="385" rx="75" ry="16" fill="#0284c7" opacity="0.4" />
+    
+    <!-- Downstem and Bowl joint -->
+    <line x1="160" y1="340" x2="215" y2="280" stroke="#bae6fd" stroke-width="8" stroke-linecap="round" />
+    <!-- Removable glass bowl -->
+    <circle cx="225" cy="270" r="14" fill="#38bdf8" stroke="#ffffff" stroke-width="2" />
+    <polygon points="218,272 232,272 225,282" fill="#0284c7" />
+    
+    <!-- Glass Highlight Reflection Streak -->
+    <path d="M 105 50 L 105 240 L 50 370" stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.7" />
+  </g>
+  <text x="300" y="530" fill="#a1a1aa" font-family="system-ui, sans-serif" font-size="13" font-weight="600" text-anchor="middle" letter-spacing="2">BONG DE VIDRO BEAKER BOROSSILICATO COM TRAVA</text>
+</svg>

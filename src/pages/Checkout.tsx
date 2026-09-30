@@ -79,6 +79,7 @@ export default function CheckoutPage() {
     items,
     subtotal,
     shipping,
+    kitDiscount,
     total,
     selectedRegion,
     setSelectedRegion,
@@ -369,6 +370,7 @@ export default function CheckoutPage() {
         })),
         subtotal,
         shipping,
+        discount: kitDiscount?.discountAmount || 0,
         total,
         status: 'novo',
       })
@@ -402,6 +404,7 @@ export default function CheckoutPage() {
         items,
         subtotal,
         shipping,
+        discount: kitDiscount?.discountAmount || 0,
         region: selectedRegion || 'Sudeste',
         total,
         customerName: formData.fullName.trim(),
@@ -1216,6 +1219,14 @@ export default function CheckoutPage() {
                     {formatBRL(subtotal)}
                   </span>
                 </div>
+                {kitDiscount?.isEligible && (
+                  <div className="flex justify-between text-emerald-600 bg-emerald-50 px-2.5 py-1.5 rounded border border-emerald-200 text-xs">
+                    <span className="font-medium">Kit Completo (5% OFF):</span>
+                    <span className="font-mono font-bold">
+                      -{formatBRL(kitDiscount.discountAmount)}
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-between text-zinc-600 items-baseline">
                   <div className="flex flex-col">
                     <span>Frete:</span>

@@ -5,6 +5,7 @@ interface WhatsAppMessageParams {
   items: OrderItem[]
   subtotal: number
   shipping: number
+  discount?: number
   region: string
   total: number
   customerName: string
@@ -51,6 +52,9 @@ export function buildWhatsAppOrderMessage(params: WhatsAppMessageParams): string
     itemsText,
     ``,
     `*Subtotal:* ${formatBRL(params.subtotal)}`,
+    params.discount && params.discount > 0
+      ? `*Desconto Kit Completo (5% OFF):* -${formatBRL(params.discount)}`
+      : null,
     `*Frete (${params.region}):* ${shippingFormatted}`,
     `*Total: ${formatBRL(params.total)}*`,
     ``,
@@ -61,8 +65,8 @@ export function buildWhatsAppOrderMessage(params: WhatsAppMessageParams): string
     `Cidade/UF: ${params.city}/${params.state}`,
     params.cep ? `CEP: ${params.cep}` : `CEP: Não informado`,
     ``,
-    `*Pagamento:* combinado via WhatsApp.`,
-  ]
+    `*Pagamento:* combinado via WhatsApp com vendedor Ali.`,
+  ].filter(Boolean) as string[]
 
   return lines.join('\n')
 }

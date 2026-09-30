@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#242426" />
+      <stop offset="100%" stop-color="#121214" />
+    </radialGradient>
+    <linearGradient id="pipeGlass" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85" />
+      <stop offset="30%" stop-color="#93c5fd" stop-opacity="0.5" />
+      <stop offset="70%" stop-color="#3b82f6" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.9" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="20" stdDeviation="16" flood-color="#000" flood-opacity="0.6" />
+    </filter>
+  </defs>
+  <rect width="600" height="600" fill="url(#bg)" />
+  <circle cx="300" cy="300" r="230" fill="#3b82f6" opacity="0.08" />
+  
+  <g transform="translate(140, 200) rotate(-12)" filter="url(#shadow)">
+    <!-- Stem Tube -->
+    <rect x="110" y="30" width="220" height="42" rx="16" fill="url(#pipeGlass)" stroke="#3b82f6" stroke-width="2.5" />
+    <!-- Mouthpiece tip -->
+    <ellipse cx="330" cy="51" rx="14" ry="24" fill="#dbeafe" stroke="#3b82f6" stroke-width="2" />
+    
+    <!-- Spoon Bowl Head -->
+    <ellipse cx="80" cy="51" rx="60" ry="50" fill="url(#pipeGlass)" stroke="#3b82f6" stroke-width="3" />
+    <!-- Bowl indentation -->
+    <ellipse cx="75" cy="45" rx="35" ry="26" fill="#1e3a8a" stroke="#2563eb" stroke-width="2" />
+    <!-- Carb hole -->
+    <circle cx="45" cy="28" r="6" fill="#1e293b" />
+    
+    <!-- Spiral color line inside glass stem -->
+    <path d="M 120 51 Q 160 38 200 51 T 280 51" stroke="#ef4444" stroke-width="4" fill="none" opacity="0.7" />
+    <path d="M 120 51 Q 160 64 200 51 T 280 51" stroke="#3b82f6" stroke-width="4" fill="none" opacity="0.7" />
+  </g>
+  <text x="300" y="520" fill="#a1a1aa" font-family="system-ui, sans-serif" font-size="13" font-weight="600" text-anchor="middle" letter-spacing="2">PIPE DE VIDRO SPOON BOROSSILICATO</text>
+</svg>

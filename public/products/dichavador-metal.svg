@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#242426" />
+      <stop offset="100%" stop-color="#121214" />
+    </radialGradient>
+    <linearGradient id="metalGrinder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#71717a" />
+      <stop offset="30%" stop-color="#52525b" />
+      <stop offset="70%" stop-color="#27272a" />
+      <stop offset="100%" stop-color="#18181b" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="20" stdDeviation="20" flood-color="#000" flood-opacity="0.7" />
+    </filter>
+  </defs>
+  <rect width="600" height="600" fill="url(#bg)" />
+  <circle cx="300" cy="300" r="230" fill="#71717a" opacity="0.1" />
+  
+  <g transform="translate(150, 160)" filter="url(#shadow)">
+    <!-- 4 parts layer stacked cylinder -->
+    <!-- Base collector -->
+    <ellipse cx="150" cy="240" rx="140" ry="46" fill="#18181b" stroke="#3f3f46" stroke-width="2" />
+    <!-- Sieve / Screen section -->
+    <ellipse cx="150" cy="190" rx="140" ry="46" fill="#27272a" stroke="#3f3f46" stroke-width="2" />
+    <!-- Teeth chamber -->
+    <ellipse cx="150" cy="140" rx="140" ry="46" fill="#3f3f46" stroke="#52525b" stroke-width="2" />
+    <!-- Knurled grip grooves on top lid -->
+    <path d="M 10 90 C 10 40 290 40 290 90 L 290 110 C 290 160 10 160 10 110 Z" fill="url(#metalGrinder)" stroke="#71717a" stroke-width="2" />
+    
+    <!-- Top lid ellipse -->
+    <ellipse cx="150" cy="90" rx="140" ry="46" fill="#52525b" stroke="#a1a1aa" stroke-width="2" />
+    <!-- Inner magnetic ring -->
+    <ellipse cx="150" cy="90" rx="90" ry="30" fill="#27272a" stroke="#71717a" stroke-width="1.5" />
+    
+    <!-- Laser engraving icon / text -->
+    <text x="150" y="96" fill="#ffffff" font-family="'Impact', 'Arial Black', sans-serif" font-size="20" font-weight="900" text-anchor="middle" letter-spacing="4">CNC GRINDER</text>
+  </g>
+  <text x="300" y="520" fill="#a1a1aa" font-family="system-ui, sans-serif" font-size="13" font-weight="600" text-anchor="middle" letter-spacing="2">DICHAVADOR METAL 4 PARTES CNC</text>
+</svg>

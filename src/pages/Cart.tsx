@@ -5,15 +5,27 @@ import { useCart } from '@/context/CartContext'
 import { formatBRL, getFileUrl, getProductFallbackImage } from '@/lib/formatters'
 import { ShippingCalculator } from '@/components/ShippingCalculator'
 import { Button } from '@/components/ui/button'
+import { OrderBumpSection } from '@/components/OrderBumpSection'
+import { getProducts } from '@/services/products'
+import { Product } from '@/types/ecommerce'
 
 export default function CartPage() {
   const navigate = useNavigate()
+  const [catalogProducts, setCatalogProducts] = React.useState<Product[]>([])
+
+  React.useEffect(() => {
+    getProducts({ activeOnly: true })
+      .then((prods) => setCatalogProducts(prods))
+      .catch((err) => console.error('Erro ao carregar produtos para order-bump:', err))
+  }, [])
+
   const {
     items,
     removeItem,
     updateQuantity,
     subtotal,
     shipping,
+    kitDiscount,
     total,
     selectedRegion,
     isFreeShippingEligible,
@@ -176,6 +188,9 @@ export default function CartPage() {
 
             {/* Shipping Calculator */}
             <ShippingCalculator />
+
+            {/* Order Bump & Kit Promocional */}
+            <OrderBumpSection products={catalogProducts} />
           </div>
 
           {/* Sticky Summary Column (35%) */}
@@ -190,6 +205,22 @@ export default function CartPage() {
                   <span>Subtotal ({items.length} itens):</span>
                   <span className="font-mono font-medium text-zinc-900">{formatBRL(subtotal)}</span>
                 </div>
+
+                {kitDiscount.isEligible && (
+                  <div className="flex justify-between text-emerald-600 bg-emerald-50 px-3 py-2 rounded-lg border border-emerald-200">
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-xs sm:text-sm">
+                        Kit Completo (5% OFF):
+                      </span>
+                      <span className="text-[10px] text-emerald-700">
+                        Seda + Cuia + Tesoura + Tabaco
+                      </span>
+                    </div>
+                    <span className="font-mono font-bold text-sm">
+                      -{formatBRL(kitDiscount.discountAmount)}
+                    </span>
+                  </div>
+                )}
 
                 <div className="flex justify-between text-zinc-600">
                   <div className="flex flex-col">

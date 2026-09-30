@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#242426" />
+      <stop offset="100%" stop-color="#121214" />
+    </radialGradient>
+    <linearGradient id="bladeSteel" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f4f4f5" />
+      <stop offset="50%" stop-color="#cbd5e1" />
+      <stop offset="100%" stop-color="#94a3b8" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#000" flood-opacity="0.6" />
+    </filter>
+  </defs>
+  <rect width="600" height="600" fill="url(#bg)" />
+  <circle cx="300" cy="300" r="230" fill="#e11d48" opacity="0.1" />
+  
+  <g transform="translate(190, 110)" filter="url(#shadow)">
+    <!-- Right Blade -->
+    <path d="M 110 220 L 170 90 L 155 70 L 95 200 Z" fill="url(#bladeSteel)" stroke="#475569" stroke-width="2" />
+    <!-- Left Blade with curved tip -->
+    <path d="M 110 220 L 50 90 L 65 70 L 125 200 Z" fill="url(#bladeSteel)" stroke="#475569" stroke-width="2" />
+    
+    <!-- Center Pivot Screw & Gold Washer -->
+    <circle cx="110" cy="210" r="10" fill="#d97706" stroke="#b45309" stroke-width="2" />
+    <circle cx="110" cy="210" r="4" fill="#78350f" />
+    
+    <!-- Finger loop handle left -->
+    <ellipse cx="65" cy="310" rx="36" ry="46" fill="#18181b" stroke="#e11d48" stroke-width="7" />
+    <!-- Finger loop handle right -->
+    <ellipse cx="155" cy="310" rx="36" ry="46" fill="#18181b" stroke="#e11d48" stroke-width="7" />
+    
+    <!-- Shank connections -->
+    <path d="M 98 220 L 65 270" stroke="#e11d48" stroke-width="8" stroke-linecap="round" />
+    <path d="M 122 220 L 155 270" stroke="#e11d48" stroke-width="8" stroke-linecap="round" />
+  </g>
+  <text x="300" y="520" fill="#a1a1aa" font-family="system-ui, sans-serif" font-size="13" font-weight="600" text-anchor="middle" letter-spacing="2">TESOURA RETRÁTIL / PONTA CURVA PRECISA</text>
+</svg>

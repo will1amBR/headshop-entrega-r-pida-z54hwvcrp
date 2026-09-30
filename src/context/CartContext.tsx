@@ -14,6 +14,16 @@ export interface CartItem extends OrderItem {
   category?: string
 }
 
+export interface KitDiscountInfo {
+  isEligible: boolean
+  discountAmount: number
+  eligibleItemsTotal: number
+  sedaFound: boolean
+  cuiaFound: boolean
+  tesouraFound: boolean
+  tabacoFound: boolean
+}
+
 interface CartContextType {
   items: CartItem[]
   selectedRegion: BrazilRegion | null
@@ -27,6 +37,7 @@ interface CartContextType {
   totalItemsCount: number
   subtotal: number
   shipping: number
+  kitDiscount: KitDiscountInfo
   total: number
   isFreeShippingEligible: boolean
   freeShippingThreshold: number
@@ -170,9 +181,60 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return REGION_SHIPPING_RATES[selectedRegion] || 0
   }, [selectedRegion, isFreeShippingEligible, items.length])
 
+  // Kit Promocional: 1 Seda + 1 Cuia + 1 Tesoura + 1 Tabaco/Pote hermético => 5% OFF nesses itens
+  const kitDiscount = useMemo<KitDiscountInfo>(() => {
+    let sedaFound = false
+    let cuiaFound = false
+    let tesouraFound = false
+    let tabacoFound = false
+    let kitItemsSum = 0
+
+    for (const item of items) {
+      const name = item.name.toLowerCase()
+      if (
+        !sedaFound &&
+        name.includes('seda') &&
+        !name.includes('porta') &&
+        !name.includes('cone')
+      ) {
+        sedaFound = true
+        kitItemsSum += item.unit_price
+      } else if (!cuiaFound && name.includes('cuia')) {
+        cuiaFound = true
+        kitItemsSum += item.unit_price
+      } else if (!tesouraFound && name.includes('tesoura')) {
+        tesouraFound = true
+        kitItemsSum += item.unit_price
+      } else if (
+        !tabacoFound &&
+        (name.includes('tabaco') ||
+          name.includes('fumo') ||
+          name.includes('pote') ||
+          name.includes('kumbaya'))
+      ) {
+        tabacoFound = true
+        kitItemsSum += item.unit_price
+      }
+    }
+
+    const isEligible = sedaFound && cuiaFound && tesouraFound && tabacoFound
+    const discountAmount = isEligible ? Number((kitItemsSum * 0.05).toFixed(2)) : 0
+
+    return {
+      isEligible,
+      discountAmount,
+      eligibleItemsTotal: Number(kitItemsSum.toFixed(2)),
+      sedaFound,
+      cuiaFound,
+      tesouraFound,
+      tabacoFound,
+    }
+  }, [items])
+
   const total = useMemo(() => {
-    return Number((subtotal + shipping).toFixed(2))
-  }, [subtotal, shipping])
+    const rawTotal = subtotal + shipping - kitDiscount.discountAmount
+    return Number(Math.max(0, rawTotal).toFixed(2))
+  }, [subtotal, shipping, kitDiscount.discountAmount])
 
   return (
     <CartContext.Provider
@@ -189,6 +251,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         totalItemsCount,
         subtotal,
         shipping,
+        kitDiscount,
         total,
         isFreeShippingEligible,
         freeShippingThreshold: FREE_SHIPPING_THRESHOLD,

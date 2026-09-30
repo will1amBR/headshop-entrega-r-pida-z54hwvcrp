@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#242426" />
+      <stop offset="100%" stop-color="#121214" />
+    </radialGradient>
+    <linearGradient id="kraft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c99f6e" />
+      <stop offset="50%" stop-color="#b88955" />
+      <stop offset="100%" stop-color="#9d7140" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#000" flood-opacity="0.6" />
+    </filter>
+  </defs>
+  <rect width="600" height="600" fill="url(#bg)" />
+  <circle cx="300" cy="300" r="240" fill="#18181b" opacity="0.4" />
+  
+  <!-- Booklet package 3D isometric angle -->
+  <g transform="translate(60, 200) rotate(-6)" filter="url(#shadow)">
+    <!-- Main booklet front -->
+    <rect x="20" y="0" width="440" height="150" rx="6" fill="url(#kraft)" stroke="#7d552c" stroke-width="2" />
+    <!-- Natural paper texture lines -->
+    <path d="M 20 40 L 460 40 M 20 110 L 460 110" stroke="#a37643" stroke-width="1" stroke-dasharray="4,4" />
+    <!-- Classic badge -->
+    <rect x="40" y="24" width="90" height="30" rx="3" fill="#2d1d11" />
+    <text x="85" y="44" fill="#f5ede3" font-family="system-ui, sans-serif" font-weight="900" font-size="14" text-anchor="middle" letter-spacing="2">CLASSIC</text>
+    
+    <!-- Big Bold Brand Logo -->
+    <text x="240" y="98" fill="#d82626" font-family="'Impact', 'Arial Black', sans-serif" font-weight="900" font-size="78" text-anchor="middle" letter-spacing="1">RAW</text>
+    <text x="240" y="125" fill="#2d1d11" font-family="system-ui, sans-serif" font-weight="800" font-size="12" text-anchor="middle" letter-spacing="3">NATURAL UNREFINED PAPERS</text>
+    
+    <!-- King Size Slim badge -->
+    <rect x="360" y="24" width="80" height="30" rx="3" fill="#2d1d11" />
+    <text x="400" y="44" fill="#f5ede3" font-family="system-ui, sans-serif" font-weight="800" font-size="11" text-anchor="middle">KING SIZE</text>
+    
+    <!-- Genuine stamp seal -->
+    <circle cx="95" cy="95" r="28" fill="none" stroke="#2d1d11" stroke-width="2" stroke-dasharray="3,2" />
+    <text x="95" y="92" fill="#2d1d11" font-family="system-ui, sans-serif" font-size="7" font-weight="800" text-anchor="middle">100% PURE</text>
+    <text x="95" y="103" fill="#2d1d11" font-family="system-ui, sans-serif" font-size="6" font-weight="900" text-anchor="middle">ORGANIC</text>
+    
+    <!-- Elastic tie band string -->
+    <line x1="220" y1="-5" x2="220" y2="155" stroke="#fff1d6" stroke-width="3" opacity="0.9" />
+  </g>
+  <text x="300" y="520" fill="#a1a1aa" font-family="system-ui, sans-serif" font-size="13" font-weight="600" text-anchor="middle" letter-spacing="2">SEDA RAW KING SIZE SLIM ORIGINAL</text>
+</svg>

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#242426" />
+      <stop offset="100%" stop-color="#121214" />
+    </radialGradient>
+    <linearGradient id="kraftBook" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d97706" />
+      <stop offset="100%" stop-color="#92400e" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#000" flood-opacity="0.6" />
+    </filter>
+  </defs>
+  <rect width="600" height="600" fill="url(#bg)" />
+  
+  <g transform="translate(160, 180) rotate(-8)" filter="url(#shadow)">
+    <!-- Booklet -->
+    <rect x="0" y="0" width="280" height="190" rx="8" fill="url(#kraftBook)" stroke="#78350f" stroke-width="2" />
+    <rect x="10" y="10" width="260" height="170" rx="6" fill="#fef3c7" stroke="#b45309" stroke-width="1.5" />
+    
+    <!-- Perforations pattern -->
+    <g fill="#92400e" opacity="0.6">
+      <circle cx="80" cy="40" r="3" /><circle cx="80" cy="65" r="3" /><circle cx="80" cy="90" r="3" /><circle cx="80" cy="115" r="3" /><circle cx="80" cy="140" r="3" />
+      <circle cx="150" cy="40" r="3" /><circle cx="150" cy="65" r="3" /><circle cx="150" cy="90" r="3" /><circle cx="150" cy="115" r="3" /><circle cx="150" cy="140" r="3" />
+    </g>
+    
+    <text x="140" y="70" fill="#78350f" font-family="'Impact', 'Arial Black', sans-serif" font-size="28" font-weight="900" text-anchor="middle">TIPS</text>
+    <text x="140" y="95" fill="#92400e" font-family="system-ui, sans-serif" font-size="13" font-weight="800" text-anchor="middle" letter-spacing="2">PITEIRAS PERFURADAS</text>
+    <text x="140" y="135" fill="#78350f" font-family="system-ui, sans-serif" font-size="11" font-weight="700" text-anchor="middle">50 FOLHAS • ECO KRAFT</text>
+  </g>
+  <text x="300" y="520" fill="#a1a1aa" font-family="system-ui, sans-serif" font-size="13" font-weight="600" text-anchor="middle" letter-spacing="2">PITEIRA DE PAPEL PERFURADA</text>
+</svg>
