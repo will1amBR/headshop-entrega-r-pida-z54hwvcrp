@@ -97,27 +97,47 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             </span>
           </div>
 
-          <Button
-            size="sm"
-            disabled={isOutOfStock}
-            onClick={handleBuy}
-            className={`font-medium transition-all duration-150 h-9 px-3 sm:px-4 text-xs ${
-              justAdded
-                ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                : 'bg-[#0A0A0A] hover:bg-zinc-800 text-white'
-            }`}
-          >
-            {justAdded ? (
-              <>
-                <Check className="w-3.5 h-3.5 mr-1" />✓ Adicionado
-              </>
-            ) : (
-              <>
-                <ShoppingCart className="w-3.5 h-3.5 mr-1" />
-                Comprar
-              </>
-            )}
-          </Button>
+          <div className="flex items-center gap-1.5">
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={isOutOfStock}
+              onClick={handleBuy}
+              title="Adicionar ao carrinho"
+              className={`h-9 px-2.5 sm:px-3 text-xs transition-all duration-150 border-zinc-200 hover:border-black ${
+                justAdded
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
+                  : 'bg-white text-zinc-800'
+              }`}
+            >
+              {justAdded ? (
+                <>
+                  <Check className="w-3.5 h-3.5 mr-1 text-emerald-600" />
+                  <span className="text-[11px] font-semibold">Adicionado</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingCart className="w-3.5 h-3.5 mr-1" />
+                  <span className="hidden sm:inline text-[11px] font-medium">+ Carrinho</span>
+                  <span className="sm:hidden text-[11px] font-medium">+</span>
+                </>
+              )}
+            </Button>
+            <Button
+              size="sm"
+              disabled={isOutOfStock}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                addItem(product, 1)
+                window.location.href = '/checkout'
+              }}
+              className="bg-[#0A0A0A] hover:bg-zinc-800 text-white font-semibold text-xs h-9 px-2.5 sm:px-3 shadow-xs"
+              title="Comprar direto sem passar pelo carrinho"
+            >
+              Comprar Já
+            </Button>
+          </div>
         </div>
       </div>
     </div>

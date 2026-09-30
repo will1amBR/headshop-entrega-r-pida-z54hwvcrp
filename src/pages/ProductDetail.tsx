@@ -405,38 +405,56 @@ export default function ProductDetailPage() {
                 </span>
               </div>
 
-              {/* Action Buttons: Add to Cart & WhatsApp */}
-              <div className="flex flex-col sm:flex-row items-stretch gap-3">
-                <Button
-                  size="lg"
-                  disabled={isOutOfStock}
-                  onClick={handleAddToCart}
-                  className={`flex-1 font-semibold text-sm sm:text-base h-12 shadow-md transition-all ${
-                    justAdded
-                      ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                      : 'bg-[#0A0A0A] hover:bg-zinc-800 text-white'
-                  }`}
-                >
-                  {justAdded ? (
-                    <>
-                      <Check className="w-5 h-5 mr-2" />✓ Adicionado ao Carrinho!
-                    </>
-                  ) : (
-                    <>
-                      <ShoppingCart className="w-5 h-5 mr-2" />
-                      Adicionar ao Carrinho
-                    </>
-                  )}
-                </Button>
+              {/* Action Buttons: Fast Buy Direct, Add to Cart & WhatsApp */}
+              <div className="space-y-2.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Botão de Compra Rápida: Adiciona e vai DIRETO ao Checkout em 1 clique */}
+                  <Button
+                    size="lg"
+                    disabled={isOutOfStock}
+                    onClick={() => {
+                      if (isOutOfStock) return
+                      addItem(product, quantity)
+                      navigate('/checkout')
+                    }}
+                    className="font-bold text-sm sm:text-base h-12 bg-[#0A0A0A] hover:bg-zinc-800 text-white shadow-md gap-2"
+                  >
+                    <Sparkles className="w-4 h-4 text-[#25D366]" />
+                    Comprar Agora (1 Clique)
+                  </Button>
+
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    disabled={isOutOfStock}
+                    onClick={handleAddToCart}
+                    className={`font-semibold text-sm sm:text-base h-12 border-zinc-300 hover:border-black transition-all ${
+                      justAdded
+                        ? 'bg-emerald-50 text-emerald-800 border-emerald-400'
+                        : 'bg-white text-zinc-900'
+                    }`}
+                  >
+                    {justAdded ? (
+                      <>
+                        <Check className="w-4 h-4 mr-2 text-emerald-600" />✓ No Carrinho
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        Adicionar ao Carrinho
+                      </>
+                    )}
+                  </Button>
+                </div>
 
                 <a
                   href={directWhatsAppLink}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center px-4 h-12 rounded-md font-semibold text-xs sm:text-sm border border-zinc-300 hover:border-black bg-zinc-50 hover:bg-zinc-100 text-zinc-900 gap-2 transition-colors whitespace-nowrap"
+                  className="w-full inline-flex items-center justify-center px-4 h-11 rounded-md font-medium text-xs sm:text-sm border border-zinc-200 hover:border-zinc-400 bg-zinc-50 hover:bg-zinc-100 text-zinc-700 gap-2 transition-colors"
                 >
                   <MessageCircle className="w-4 h-4 text-[#25D366] fill-current" />
-                  Tirar Dúvidas no WhatsApp
+                  Dúvidas sobre o produto? Chamar consultor no WhatsApp
                 </a>
               </div>
             </div>
