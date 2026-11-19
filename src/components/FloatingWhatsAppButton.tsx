@@ -12,6 +12,7 @@ import {
   ChevronDown,
 } from 'lucide-react'
 import { getSeoSettings } from '@/services/seo'
+import { pb } from '@/lib/pocketbase/client'
 import { buildWhatsAppUrl } from '@/lib/whatsapp'
 import { formatBRL } from '@/lib/formatters'
 import { Button } from '@/components/ui/button'
@@ -132,8 +133,7 @@ export const FloatingWhatsAppButton: React.FC = () => {
     setIsLoading(true)
 
     try {
-      const backendUrl = import.meta.env.VITE_POCKETBASE_URL || ''
-      const res = await fetch(`${backendUrl}/backend/v1/agent/chat`, {
+      const res = await fetch(`${pb.baseURL}/backend/v1/agent/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -362,24 +362,27 @@ export const FloatingWhatsAppButton: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => {
-                              // Adiciona os itens ao carrinho e abre o popup de confirmação
-                              const first = msg.checkoutData!.items[0]
-                              addItem(
-                                {
-                                  id: `chat-item-${Date.now()}`,
-                                  name: first?.name || 'Combo sugerido pelo Ali',
-                                  price: first?.price || msg.checkoutData!.subtotal || 25,
-                                  stock: 50,
-                                  category: 'acessorios',
-                                  featured: false,
-                                  active: true,
-                                  description: 'Item adicionado via consultoria no chat do Ali',
-                                  created: '',
-                                  updated: '',
-                                },
-                                first?.quantity || 1,
-                                true,
-                              )
+                              // Adiciona TODOS os itens sugeridos pelo Ali ao carrinho
+                              const checkoutItems = msg.checkoutData!.items
+                              checkoutItems.forEach((it, idx) => {
+                                addItem(
+                                  {
+                                    id: `chat-item-${Date.now()}-${idx}`,
+                                    name: it.name,
+                                    price: it.price || 0,
+                                    stock: 50,
+                                    category: 'acessorios',
+                                    featured: false,
+                                    active: true,
+                                    description: 'Item adicionado via consultoria no chat do Ali',
+                                    created: '',
+                                    updated: '',
+                                  },
+                                  it.quantity || 1,
+                                  // abre o popup de confirmação só no último item
+                                  idx === checkoutItems.length - 1,
+                                )
+                              })
                             }}
                             className="w-full flex items-center justify-center gap-1.5 bg-zinc-900 hover:bg-black text-white py-2 px-2.5 rounded-lg font-semibold text-xs shadow-xs transition-all"
                           >
