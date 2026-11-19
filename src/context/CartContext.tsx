@@ -15,6 +15,7 @@ import {
   REGION_SHIPPING_RATES,
 } from '@/types/ecommerce'
 import { AddedToCartModal } from '@/components/AddedToCartModal'
+import { getProducts } from '@/services/products'
 
 export interface CartItem extends OrderItem {
   productId: string
@@ -62,6 +63,7 @@ interface CartContextType {
   openAddToCartModal: (product: Product, quantity?: number) => void
   isOfferModalOpen: boolean
   dismissInactivityOffer: () => void
+  products: Product[]
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
@@ -83,6 +85,23 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return []
     }
   })
+
+  // Catálogo carregado do PocketBase — usado pelo chat do Ali para resolver
+  // produtos reais por nome antes de adicionar ao carrinho
+  const [products, setProducts] = useState<Product[]>([])
+  useEffect(() => {
+    let cancelled = false
+    getProducts({ activeOnly: true })
+      .then((list) => {
+        if (!cancelled) setProducts(list)
+      })
+      .catch(() => {
+        /* catálogo fica vazio — chat avisa que não achou o produto */
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const [selectedRegion, setSelectedRegion] = useState<BrazilRegion | null>(() => {
     try {
@@ -420,6 +439,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         openAddToCartModal,
         isOfferModalOpen,
         dismissInactivityOffer,
+        products,
       }}
     >
       {children}

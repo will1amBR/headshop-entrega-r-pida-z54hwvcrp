@@ -16,7 +16,10 @@ export const Footer: React.FC = () => {
   }, [])
 
   return (
-    <footer className="bg-[#0A0A0A] text-zinc-300 border-t border-zinc-800 pt-16 pb-12 mt-auto">
+    <footer
+      id="contato"
+      className="bg-[#0A0A0A] text-zinc-300 border-t border-zinc-800 pt-16 pb-12 mt-auto scroll-mt-20"
+    >
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-zinc-800/80">
           {/* Column 1: Brand & Desc */}
@@ -120,20 +123,32 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Column 4: WhatsApp Payment badge */}
+          {/* Column 4: Contact */}
           <div className="space-y-3">
             <h4 className="font-display text-sm font-semibold text-white tracking-wider uppercase">
-              Formas de Pagamento
+              Contato
             </h4>
             <div className="p-4 rounded-lg bg-zinc-900/90 border border-zinc-800 space-y-2">
               <div className="flex items-center gap-2 text-white font-medium text-sm">
-                <Sparkles className="w-4 h-4 text-[#25D366]" />
-                <span>Pagamento combinado via WhatsApp</span>
+                <MessageCircle className="w-4 h-4 text-[#25D366]" />
+                <span>Atendimento via WhatsApp</span>
               </div>
               <p className="text-xs text-zinc-400 leading-normal">
-                Você não insere dados financeiros no site. A negociação e a chave PIX ou link de
-                pagamento são combinados de forma segura pelo chat.
+                Fale com o Ali ou com nossa equipe de atendimento humano pelo WhatsApp da loja.
+                Pedidos, dúvidas e pagamento (PIX, cartão ou boleto) combinados direto no chat.
               </p>
+              <a
+                href={buildWhatsAppUrl(
+                  phone,
+                  'Olá! Vim pela seção de contato do site e quero falar com a HeadShop.',
+                )}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#25D366] hover:underline pt-1"
+              >
+                <MessageCircle className="w-3.5 h-3.5" />
+                Abrir conversa no WhatsApp
+              </a>
             </div>
           </div>
         </div>

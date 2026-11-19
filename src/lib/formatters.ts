@@ -1,3 +1,5 @@
+import pb from '@/lib/pocketbase/client'
+
 export function formatBRL(value: number): string {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -41,7 +43,7 @@ export function getFileUrl(
   filename?: string,
 ): string {
   if (!filename) return ''
-  const baseUrl = (import.meta.env.VITE_POCKETBASE_URL || '').replace(/\/$/, '')
+  const baseUrl = (pb.baseURL || '').replace(/\/$/, '')
   return `${baseUrl}/api/files/${collectionIdOrName}/${recordId}/${filename}`
 }
 

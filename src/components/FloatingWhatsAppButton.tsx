@@ -12,11 +12,13 @@ import {
   ChevronDown,
 } from 'lucide-react'
 import { getSeoSettings } from '@/services/seo'
-import { pb } from '@/lib/pocketbase/client'
+import pb from '@/lib/pocketbase/client'
 import { buildWhatsAppUrl } from '@/lib/whatsapp'
 import { formatBRL } from '@/lib/formatters'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/context/CartContext'
+import { Product } from '@/types/ecommerce'
+import { useToast } from '@/hooks/use-toast'
 
 interface ChatMessage {
   id: string
@@ -53,7 +55,8 @@ function extractCheckoutBlock(text: string): {
 }
 
 export const FloatingWhatsAppButton: React.FC = () => {
-  const { addItem } = useCart()
+  const { addItem, products } = useCart()
+  const { toast } = useToast()
   const [phone, setPhone] = useState('5548992463428')
   const [storeName, setStoreName] = useState('HeadShop Entrega Rápida')
   const [isOpen, setIsOpen] = useState(false)
@@ -180,6 +183,64 @@ export const FloatingWhatsAppButton: React.FC = () => {
       setMessages((prev) => [...prev, errorMsg])
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleAddChatItemsToCart = async (checkout: ParsedCheckout) => {
+    // Adiciona TODOS os itens sugeridos pelo Ali ao carrinho — resolvendo o produto REAL
+    // do catálogo por nome, para não criar itens sintéticos duplicados ou sem preço válido
+    const matched = new Map<string, { product: Product; quantity: number }>()
+    let addedAny = false
+    let missingProducts: string[] = []
+
+    checkout.items.forEach((it) => {
+      const qty = it.quantity || 1
+      const target = (it.name || '').trim().toLowerCase()
+      if (!target) return
+
+      const product = products.find((p) => p.name.trim().toLowerCase() === target)
+      if (!product || typeof product.price !== 'number' || !(product.price > 0)) {
+        if (product && !(product.price > 0)) {
+          // produto existe mas sem preço válido — não adiciona
+          missingProducts.push(it.name)
+        } else if (!product) {
+          missingProducts.push(it.name)
+        }
+        return
+      }
+
+      const existing = matched.get(product.id)
+      if (existing) {
+        existing.quantity += qty
+      } else {
+        matched.set(product.id, { product, quantity: qty })
+      }
+    })
+
+    for (const { product, quantity } of matched.values()) {
+      try {
+        await addItem(product, quantity, false)
+        addedAny = true
+      } catch (err) {
+        console.error('Erro ao adicionar item do chat ao carrinho:', product.name, err)
+      }
+    }
+
+    if (missingProducts.length > 0) {
+      toast({
+        title: 'Alguns itens não foram adicionados',
+        description: `Não encontrei no catálogo (ou sem preço válido): ${missingProducts.join(', ')}. Fale com o Ali para confirmar os itens.`,
+      })
+    } else if (addedAny) {
+      toast({
+        title: 'Itens adicionados ao carrinho!',
+        description: 'Os produtos sugeridos pelo Ali já estão no seu carrinho. 🛒',
+      })
+    } else {
+      toast({
+        title: 'Nada foi adicionado',
+        description: 'Não consegui identificar esses produtos no catálogo. Confira com o Ali.',
+      })
     }
   }
 
@@ -361,29 +422,7 @@ export const FloatingWhatsAppButton: React.FC = () => {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           <button
                             type="button"
-                            onClick={() => {
-                              // Adiciona TODOS os itens sugeridos pelo Ali ao carrinho
-                              const checkoutItems = msg.checkoutData!.items
-                              checkoutItems.forEach((it, idx) => {
-                                addItem(
-                                  {
-                                    id: `chat-item-${Date.now()}-${idx}`,
-                                    name: it.name,
-                                    price: it.price || 0,
-                                    stock: 50,
-                                    category: 'acessorios',
-                                    featured: false,
-                                    active: true,
-                                    description: 'Item adicionado via consultoria no chat do Ali',
-                                    created: '',
-                                    updated: '',
-                                  },
-                                  it.quantity || 1,
-                                  // abre o popup de confirmação só no último item
-                                  idx === checkoutItems.length - 1,
-                                )
-                              })
-                            }}
+                            onClick={() => handleAddChatItemsToCart(msg.checkoutData!)}
                             className="w-full flex items-center justify-center gap-1.5 bg-zinc-900 hover:bg-black text-white py-2 px-2.5 rounded-lg font-semibold text-xs shadow-xs transition-all"
                           >
                             <ShoppingBag className="w-3.5 h-3.5 text-[#25D366]" />

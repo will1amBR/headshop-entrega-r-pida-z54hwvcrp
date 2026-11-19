@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ShoppingBag, Settings, Menu, X, Sparkles } from 'lucide-react'
 import { useCart } from '@/context/CartContext'
 import { Button } from '@/components/ui/button'
@@ -8,17 +8,37 @@ export const Navbar: React.FC = () => {
   const { totalItemsCount } = useCart()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
 
   const navLinks = [
     { label: 'Início', path: '/' },
     { label: 'Produtos', path: '/produtos' },
-    { label: 'Sobre', path: '/#sobre' },
-    { label: 'Contato', path: '/#contato' },
+    { label: 'Sobre', path: '/#sobre', anchor: 'sobre' },
+    { label: 'Contato', path: '/#contato', anchor: 'contato' },
   ]
 
   const isActive = (path: string) => {
     if (path.includes('#')) return false
     return location.pathname === path
+  }
+
+  // Navega para a home (se necessário) e rola suavemente até a âncora
+  const handleAnchorClick = (e: React.MouseEvent, anchorId: string) => {
+    e.preventDefault()
+    setMobileMenuOpen(false)
+    const scroll = () => {
+      const el = document.getElementById(anchorId)
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }
+    if (location.pathname !== '/') {
+      navigate('/')
+      // aguarda a home montar antes de rolar
+      setTimeout(scroll, 150)
+    } else {
+      scroll()
+    }
   }
 
   return (
@@ -41,17 +61,30 @@ export const Navbar: React.FC = () => {
 
         {/* Desktop Navigation Links */}
         <nav className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <Link
-              key={link.label}
-              to={link.path}
-              className={`text-sm font-medium transition-colors hover:text-black ${
-                isActive(link.path) ? 'text-black font-semibold' : 'text-zinc-600'
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) =>
+            link.anchor ? (
+              <a
+                key={link.label}
+                href={`#${link.anchor}`}
+                onClick={(e) => handleAnchorClick(e, link.anchor!)}
+                className={`text-sm font-medium transition-colors hover:text-black ${
+                  isActive(link.path) ? 'text-black font-semibold' : 'text-zinc-600'
+                }`}
+              >
+                {link.label}
+              </a>
+            ) : (
+              <Link
+                key={link.label}
+                to={link.path}
+                className={`text-sm font-medium transition-colors hover:text-black ${
+                  isActive(link.path) ? 'text-black font-semibold' : 'text-zinc-600'
+                }`}
+              >
+                {link.label}
+              </Link>
+            ),
+          )}
         </nav>
 
         {/* Right Actions */}
@@ -97,16 +130,27 @@ export const Navbar: React.FC = () => {
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden border-b border-zinc-200 bg-white px-4 pt-3 pb-6 space-y-3 animate-fade-in">
-          {navLinks.map((link) => (
-            <Link
-              key={link.label}
-              to={link.path}
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-base font-medium text-zinc-800 hover:text-black hover:bg-zinc-50 rounded px-2"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) =>
+            link.anchor ? (
+              <a
+                key={link.label}
+                href={`#${link.anchor}`}
+                onClick={(e) => handleAnchorClick(e, link.anchor!)}
+                className="block py-2 text-base font-medium text-zinc-800 hover:text-black hover:bg-zinc-50 rounded px-2"
+              >
+                {link.label}
+              </a>
+            ) : (
+              <Link
+                key={link.label}
+                to={link.path}
+                onClick={() => setMobileMenuOpen(false)}
+                className="block py-2 text-base font-medium text-zinc-800 hover:text-black hover:bg-zinc-50 rounded px-2"
+              >
+                {link.label}
+              </Link>
+            ),
+          )}
           <div className="pt-2 border-t border-zinc-100 flex items-center justify-between">
             <Link
               to="/admin"

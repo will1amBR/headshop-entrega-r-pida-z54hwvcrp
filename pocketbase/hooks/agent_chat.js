@@ -16,34 +16,17 @@ routerAdd('POST', '/backend/v1/agent/chat', (e) => {
         )
         userId = serviceUser.id
       } catch (_) {
-        try {
-          const legacyUser = $app.findAuthRecordByEmail(
-            '_pb_users_auth_',
-            'vendedor-will@headshop.local',
-          )
-          userId = legacyUser.id
-        } catch (_) {
-          // Fallback para admin caso o usuário de serviço não seja localizado
-          const fallbackUser = $app.findAuthRecordByEmail(
-            '_pb_users_auth_',
-            'william@korenambiental.com',
-          )
-          userId = fallbackUser.id
-        }
+        // Fallback para admin caso o usuário de serviço não seja localizado
+        const fallbackUser = $app.findAuthRecordByEmail(
+          '_pb_users_auth_',
+          'william@korenambiental.com',
+        )
+        userId = fallbackUser.id
       }
     }
 
     const conversationId = body.conversation_id || null
-    let agentHandle
-    try {
-      agentHandle = $ai.agent('ali-sales-specialist')
-    } catch (_) {
-      try {
-        agentHandle = $ai.agent('will-vendedor')
-      } catch (e) {
-        throw e
-      }
-    }
+    const agentHandle = $ai.agent('ali-sales-specialist')
 
     const result = agentHandle.chat({
       user_id: userId,
