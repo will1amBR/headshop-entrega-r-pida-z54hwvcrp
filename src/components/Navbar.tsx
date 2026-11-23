@@ -33,9 +33,7 @@ export const Navbar: React.FC = () => {
       }
     }
     if (location.pathname !== '/') {
-      navigate('/')
-      // aguarda a home montar antes de rolar
-      setTimeout(scroll, 150)
+      navigate('/', { state: { scrollTo: anchorId } })
     } else {
       scroll()
     }

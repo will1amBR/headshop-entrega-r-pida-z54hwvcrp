@@ -45,6 +45,12 @@ export default function ProductsPage() {
   // Modo de visualização: 'grid' (com paginação) ou 'grouped' (agrupado por seções de categoria)
   const [viewMode, setViewMode] = useState<'grid' | 'grouped'>('grid')
 
+  // Sincroniza o chip de categoria com o query param ?categoria= (chips da home e breadcrumbs)
+  useEffect(() => {
+    const param = searchParams.get('categoria')
+    setSelectedCategory(param || 'todos')
+  }, [searchParams])
+
   const currentCategoryName = useMemo(() => {
     if (selectedCategory === 'todos') return 'Todos os Produtos'
     const cat = categories.find((c) => c.slug === selectedCategory)
@@ -282,7 +288,7 @@ export default function ProductsPage() {
               size="sm"
               onClick={() => {
                 setSearch('')
-                setSelectedCategory('todos')
+                handleCategoryChange('todos')
               }}
             >
               Limpar Filtros

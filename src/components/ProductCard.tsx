@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Check, ShoppingCart } from 'lucide-react'
 import { Product } from '@/types/ecommerce'
 import { formatBRL, getFileUrl, getProductFallbackImage } from '@/lib/formatters'
@@ -13,6 +13,7 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { addItem } = useCart()
+  const navigate = useNavigate()
   const [justAdded, setJustAdded] = useState(false)
 
   const imageUrl = product.image
@@ -131,7 +132,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 e.preventDefault()
                 e.stopPropagation()
                 addItem(product, 1, false)
-                window.location.href = '/checkout'
+                navigate('/checkout')
               }}
               className="bg-[#0A0A0A] hover:bg-zinc-800 text-white font-semibold text-xs h-9 px-1.5 shadow-xs w-full flex items-center justify-center min-w-0"
               title="Comprar direto sem passar pelo carrinho"

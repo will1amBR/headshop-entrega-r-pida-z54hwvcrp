@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import {
   ArrowRight,
   MessageCircle,
@@ -26,6 +26,7 @@ import { useSeoMeta } from '@/hooks/use-seo-meta'
 
 export default function IndexPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [categories, setCategories] = useState<Category[]>([])
   const [allProducts, setAllProducts] = useState<Product[]>([])
   const [seo, setSeo] = useState<SeoSettings | null>(null)
@@ -51,6 +52,20 @@ export default function IndexPage() {
     }
     loadData()
   }, [])
+
+  // Navbar pede rolagem até uma âncora (#sobre, #contato) ao chegar na home via state
+  useEffect(() => {
+    const scrollTo = (location.state as { scrollTo?: string } | null)?.scrollTo
+    if (scrollTo) {
+      // pequeno atraso para a home terminar de montar/renderizar as seções
+      const t = setTimeout(() => {
+        document.getElementById(scrollTo)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        // limpa o state para não rolar de novo ao recarregar/navegar de volta
+        navigate(location.pathname, { replace: true, state: null })
+      }, 200)
+      return () => clearTimeout(t)
+    }
+  }, [location.state, navigate, location.pathname])
 
   const whatsappPhone = seo?.whatsapp_number || '5548992463428'
 
